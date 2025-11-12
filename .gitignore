@@ -1,38 +1,38 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# Arquivo de Log de Dependências (Opcional, mas comum se todos usarem a mesma versão)
+# Se você quiser que todos os devs tenham a mesma versão de pacotes,
+# comente a linha abaixo. Se não, pode ignorar.
+# bun.lockb
 
-# dependencies
+# Dependências
 node_modules/
 
-# Expo
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# Arquivos de Ambiente
+# !! IMPORTANTE: Impede que suas chaves de API e URLs de banco de dados
+# !! sejam enviadas para o GitHub acidentalmente.
+.env
+.env.*
+*.env
+
+# Cache e Configurações do Expo
+# Ignora o cache local, builds e configurações de dispositivo.
 .expo/
 dist/
-web-build/
-expo-env.d.ts
+.expo-gh-pages/
 
-# Native
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
+# Caches do Bundler
+.metro-cache/
 
-# Metro
-.metro-health-check*
+# Configurações de IDE e Editor
+.vscode/
+.idea/
 
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
+# Arquivos de Sistema Operacional
 .DS_Store
-*.pem
-
-# local env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
-.vercel
-.next
+Thumbs.db
