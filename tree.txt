@@ -1,0 +1,80 @@
+.
+├── app
+│   ├── animal
+│   │   └── [id]
+│   │       ├── add-descendant.tsx
+│   │       ├── descendant.tsx
+│   │       └── health
+│   │           ├── add.tsx
+│   │           ├── [eventId].tsx
+│   │           └── index.tsx
+│   ├── health-events.tsx
+│   ├── index.tsx
+│   ├── _layout.tsx
+│   ├── locales
+│   │   ├── en.json
+│   │   ├── es.json
+│   │   └── pt-BR.json
+│   ├── register.tsx
+│   └── (tabs)
+│       ├── herd.tsx
+│       ├── index.tsx
+│       ├── _layout.tsx
+│       └── profile.tsx
+├── app.json
+├── assets
+│   └── images
+│       ├── adaptive-icon.png
+│       ├── favicon.png
+│       ├── icon.png
+│       └── splash-icon.png
+├── backend
+│   ├── honop.ts
+│   └── trpc
+│       └── routes
+│           └── example
+│               └── hi
+│                   ├── app-router.ts
+│                   ├── create-context.ts
+│                   └── routes.ts
+├── bun.lock
+├── components
+│   ├── Button.tsx
+│   └── Input.tsx
+├── constants
+│   └── colors.ts
+├── contexts
+│   └── HerdContext.tsx
+├── .env
+├── .eslintrc.js
+├── .expo
+│   ├── devices.json
+│   ├── README.md
+│   ├── settings.json
+│   ├── types
+│   │   └── router.d.ts
+│   └── web
+│       └── cache
+│           └── production
+│               └── images
+│                   └── favicon
+│                       └── favicon-54dffe25b93fb443f832e978cd3fcddf0545b97db22cacae887bc17d25ca5be1-contain-transparent
+│                           └── favicon-48.png
+├── expo-env.d.ts
+├── .gitignore
+├── lib
+│   ├── i18n.ts
+│   └── trpc.tsx
+├── package.json
+├── package-lock.json
+├── README.md
+├── repositories
+│   └── HerdRepository.tsx
+├── services
+│   └── storage.ts
+├── tree.txt
+├── tsconfig.json
+└── types
+    └── models.ts
+
+29 directories, 49 files

@@ -1,0 +1,142 @@
+{
+  "common": {
+    "cancel": "Cancelar",
+    "logout": "Sair",
+    "comingSoon": "Em Breve",
+    "user": "Usuário",
+    "emailExample": "email@exemplo.com",
+    "back": "Voltar",
+    "email": "E-mail",
+    "emailPlaceholder": "joao@exemplo.com",
+    "password": "Senha",
+    "success": "Sucesso",
+    "error": "Erro",
+    "loading": "Carregando...",
+    "delete": "Excluir",
+    "notes": "Anotações",
+    "notesPlaceholder": "Adicione qualquer anotação adicional...",
+    "created": "Criado em",
+    "save": "Salvar",
+    "notesPlaceholderObservations": "Adicione quaisquer anotações ou observações adicionais...",
+    "male": "Macho",
+    "female": "Fêmea",
+    "searchByIdOrName": "Buscar por ID ou nome..."
+  },
+  "animal": {
+    "profileTitle": "Perfil do Animal",
+    "addTitle": "Adicionar Animal",
+    "notFound": "Animal não encontrado",
+    "addDescendantTitle": "Adicionar Descendente",
+    "parentAnimal": "Animal Genitor",
+    "relationship": "Parentesco",
+    "relationshipMother": "Mãe",
+    "relationshipFather": "Pai",
+    "selectDescendant": "Selecionar Descendente",
+    "noAnimalsFound": "Nenhum animal encontrado",
+    "saveDescendantButton": "Adicionar Descendente",
+    "parentNotFound": "Animal genitor não encontrado",
+    "alert": {
+      "selectDescendant": "Por favor, selecione um descendente",
+      "addDescendantFailed": "Falha ao adicionar descendente"
+    },
+    "descendantsTitle": "Descendentes",
+    "dob": "Nasc.",
+    "gender": "Sexo",
+    "type": "Tipo",    
+    "empty": {
+      "descendantsTitle": "Nenhum descendente registrado",
+      "descendantsSubtitle": "Toque no botão + abaixo para adicionar um descendente"
+    }
+  },
+  "register": {
+    "title": "Criar Conta",
+    "formTitle": "Crie sua Conta",
+    "description": "Junte-se ao Happy Herd para começar a gerenciar seu rebanho com eficiência",
+    "fullNameLabel": "Nome Completo",
+    "fullNamePlaceholder": "João da Silva",
+    "passwordPlaceholder": "Pelo menos 6 caracteres",
+    "confirmPasswordLabel": "Confirmar Senha",
+    "confirmPasswordPlaceholder": "Digite a senha novamente",
+    "termsAgreement": "Eu concordo com os Termos de Serviço e a Política de Privacidade",
+    "errors": {
+      "fullNameRequired": "O nome completo é obrigatório",
+      "emailRequired": "O e-mail é obrigatório",
+      "emailInvalid": "Por favor, insira um e-mail válido",
+      "passwordRequired": "A senha é obrigatória",
+      "passwordLength": "A senha deve ter pelo menos 6 caracteres",
+      "passwordMismatch": "As senhas não coincidem",
+      "termsRequired": "Você deve concordar com os termos"
+    },
+    "alert": {
+      "successMessage": "Conta criada com sucesso!",
+      "errorMessage": "Falha ao criar conta. Por favor, tente novamente."
+    }
+  },
+  "health": {
+    "recordsTitle": "Registros de Saúde",
+    "addEventTitle": "Adicionar Evento de Saúde",
+    "allEventsTitle": "Todos os Eventos de Saúde",
+    "eventSingular": "evento",
+    "eventPlural": "eventos",
+    "eventTypes": {
+      "vaccination": "Vacinação",
+      "treatment": "Tratamento",
+      "checkup": "Check-up",
+      "injury": "Lesão",
+      "other": "Outro"
+    },
+    "empty": {
+      "title": "Nenhum evento de saúde registrado",
+      "subtitle": "Os eventos de saúde aparecerão aqui assim que você os adicionar aos seus animais",
+      "titleAnimal": "Nenhum registro de saúde ainda",
+      "subtitleAnimal": "Toque no botão + abaixo para adicionar um evento de saúde"
+    },
+    "detail": {
+      "title": "Evento de Saúde",
+      "notFound": "Evento não encontrado",
+      "editButton": "Editar Evento",
+      "errors": {
+        "nameRequired": "Por favor, insira um nome para o evento"
+      },
+      "alert": {
+        "updateFailed": "Falha ao atualizar o evento",
+        "deleteTitle": "Excluir Evento de Saúde",
+        "deleteMessage": "Tem certeza que quer excluir este evento? Esta ação não pode ser desfeita.",
+        "deleteFailed": "Falha ao excluir o evento"
+      }
+    },
+    "form": {
+      "typeLabel": "Tipo de Evento",
+      "nameLabel": "Nome do Evento",
+      "namePlaceholder": "Ex: Vacinação Anual",
+      "namePlaceholderAdd": "Ex: Vacinação Anual, Check-up de rotina",
+      "dateLabel": "Data",
+      "datePlaceholder": "AAAA-MM-DD",
+      "timeLabel": "Hora",
+      "timePlaceholder": "HH:MM",
+      "vetLabel": "Veterinário",
+      "vetPlaceholder": "Nome do veterinário",
+      "costLabel": "Custo (R$)",
+      "costLabelSimple": "Custo",
+      "costPlaceholder": "Custo do tratamento",
+      "saveButton": "Salvar Evento de Saúde",
+      "alert": {
+        "addFailed": "Falha ao adicionar evento de saúde"
+      }
+    }
+  },
+  "welcome": {
+    "subtitle": "Gestão Inteligente de Rebanho",
+    "description": "Gerencie seu gado, rastreie registros de saúde, monitore a reprodução e mantenha seu rebanho próspero com nossa plataforma completa de gerenciamento.",
+    "feature1": "Rastreie a saúde e o histórico individual do animal",
+    "feature2": "Monitore a reprodução e os descendentes",
+    "feature3": "Gerencie múltiplos rebanhos sem esforço",
+    "feature4": "Offline-first, sempre acessível",
+    "getStarted": "Começar Agora"
+  },
+  "tabs": {
+    "dashboard": "Painel",
+    "herd": "Meu Rebanho",
+    "profile": "Perfil"
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "logout": "Logout",
+    "comingSoon": "Coming Soon",
+    "user": "User",
+    "emailExample": "user@example.com",
+    "back": "Back",
+    "email": "Email",
+    "emailPlaceholder": "john@example.com",
+    "password": "Password",
+    "success": "Success",
+    "error": "Error",
+    "loading": "Loading...",
+    "delete": "Delete",
+    "notes": "Notes",
+    "notesPlaceholder": "Add any additional notes...",
+    "created": "Created",
+    "save": "Save",
+    "notesPlaceholderObservations": "Add any additional notes or observations...",
+    "male": "Male",
+    "female": "Female",
+    "searchByIdOrName": "Search by ID or name..."
+  },
+  "animal": {
+    "profileTitle": "Animal Profile",
+    "addTitle": "Add Animal",
+    "notFound": "Animal not found",
+    "addDescendantTitle": "Add Descendant",
+    "parentAnimal": "Parent Animal",
+    "relationship": "Relationship",
+    "relationshipMother": "Mother",
+    "relationshipFather": "Father",
+    "selectDescendant": "Select Descendant",
+    "noAnimalsFound": "No animals found",
+    "saveDescendantButton": "Add Descendant",
+    "parentNotFound": "Parent animal not found",
+    "alert": {
+      "selectDescendant": "Please select a descendant",
+      "addDescendantFailed": "Failed to add descendant"
+    },
+    "descendantsTitle": "Descendants",
+    "dob": "DOB",
+    "gender": "Gender",
+    "type": "Type",
+    "empty": {
+      "descendantsTitle": "No descendants recorded",
+      "descendantsSubtitle": "Tap the + button below to add a descendant"
+    }
+  },
+  "register": {
+    "title": "Create Account",
+    "formTitle": "Create Your Account",
+    "description": "Join Happy Herd to start managing your livestock efficiently",
+    "fullNameLabel": "Full Name",
+    "fullNamePlaceholder": "John Doe",
+    "passwordPlaceholder": "At least 6 characters",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter your password",
+    "termsAgreement": "I agree to the Terms of Service and Privacy Policy",
+    "errors": {
+      "fullNameRequired": "Full name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email",
+      "passwordRequired": "Password is required",
+      "passwordLength": "Password must be at least 6 characters",
+      "passwordMismatch": "Passwords do not match",
+      "termsRequired": "You must agree to the terms"
+    },
+    "alert": {
+      "successMessage": "Account created successfully!",
+      "errorMessage": "Failed to create account. Please try again."
+    }
+  },
+  "health": {
+    "recordsTitle": "Health Records",
+    "addEventTitle": "Add Health Event",
+    "allEventsTitle": "All Health Events",
+    "eventSingular": "event",
+    "eventPlural": "events",
+    "eventTypes": {
+      "vaccination": "Vaccination",
+      "treatment": "Treatment",
+      "checkup": "Checkup",
+      "injury": "Injury",
+      "other": "Other"
+    },
+    "empty": {
+      "title": "No health events recorded",
+      "subtitle": "Health events will appear here once you add them to your animals",
+      "titleAnimal": "No health records yet",
+      "subtitleAnimal": "Tap the + button below to add a health event"
+    },
+    "detail": {
+      "title": "Health Event",
+      "notFound": "Event not found",
+      "editButton": "Edit Event",
+      "errors": {
+        "nameRequired": "Please enter an event name"
+      },
+      "alert": {
+        "updateFailed": "Failed to update event",
+        "deleteTitle": "Delete Health Event",
+        "deleteMessage": "Are you sure you want to delete this health event? This action cannot be undone.",
+        "deleteFailed": "Failed to delete event"
+      }
+    },
+    "form": {
+      "typeLabel": "Event Type",
+      "nameLabel": "Event Name",
+      "namePlaceholder": "e.g., Annual vaccination",
+      "namePlaceholderAdd": "e.g., Annual vaccination, Routine checkup",
+      "dateLabel": "Date",
+      "datePlaceholder": "YYYY-MM-DD",
+      "timeLabel": "Time",
+      "timePlaceholder": "HH:MM",
+      "vetLabel": "Veterinarian",
+      "vetPlaceholder": "Veterinarian name",
+      "costLabel": "Cost ($)",
+      "costLabelSimple": "Cost",
+      "costPlaceholder": "Cost of treatment",
+      "saveButton": "Save Health Event",
+      "alert": {
+        "addFailed": "Failed to add health event"
+      }
+    }
+  },
+  "welcome": {
+    "subtitle": "Smart Livestock Management",
+    "description": "Manage your cattle, track health records, monitor breeding, and keep your herd thriving with our comprehensive livestock management platform.",
+    "feature1": "Track individual animal health & history",
+    "feature2": "Monitor breeding & descendants",
+    "feature3": "Manage multiple herds effortlessly",
+    "feature4": "Offline-first, always accessible",
+    "getStarted": "Get Started"
+  },
+  "tabs": {
+    "dashboard": "Dashboard",
+    "herd": "My Herd",
+    "profile": "Profile"
+  }
+}
