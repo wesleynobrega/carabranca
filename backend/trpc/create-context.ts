@@ -1,27 +1,33 @@
-// backend/trpc/create-context.ts (CORRIGIDO)
-
 import { createClient } from '@supabase/supabase-js';
 import { initTRPC, TRPCError } from "@trpc/server";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import superjson from "superjson";
-import { supabase } from '../lib/supabase';
+// ✅ NOVO IMPORT: Importa a função de inicialização segura
+import { getSupabaseClient } from '../lib/supabase';
+
+// 1. CORREÇÃO TS2339 (Propriedade 'data'): 
+// Define o tipo do User de forma segura, extraindo do retorno da função getUser.
+type SupabaseUser = Awaited<ReturnType<ReturnType<typeof getSupabaseClient>['auth']['getUser']>>['data']['user'];
 
 export interface Context {
   req: Request;
-  user: Awaited<ReturnType<typeof supabase.auth.getUser>>['data']['user'] | null;
+  user: SupabaseUser | null; 
 }
 
 export const createContext = async (opts: FetchCreateContextFnOptions): Promise<Context> => {
   let user: Context['user'] = null;
-  
   const authHeader = opts.req.headers.get('Authorization');
+  
+  const supabase = getSupabaseClient(); // Obtém o cliente anônimo (seguro)
+
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.split(' ')[1];
     
-    // 2. Usar o cliente global para validar o token
+    // 2. CORREÇÃO TS2339 (Rotina): Acessa a propriedade 'data' corretamente
     const { data: userData, error } = await supabase.auth.getUser(token);
     
-    if (!error) {
+    // Verifica se não houve erro e se há um objeto de usuário válido
+    if (!error && userData?.user) {
       user = userData.user;
     }
   }
@@ -55,10 +61,11 @@ const isAuthed = t.middleware(({ ctx, next }) => {
 
 export const protectedProcedure = t.procedure.use(isAuthed);
 
-// 3. HELPER DO CLIENTE ESPECÍFICO DO USUÁRIO (MOVIDO PARA CÁ)
-// (Usado por animal.ts, health.ts, descendant.ts)
+// 3. CORREÇÃO TS2445 e TS2339 (Propriedades Protegidas): 
+// Lê as chaves diretamente de process.env, ignorando as propriedades protegidas.
 export const createSupabaseClient = (ctx: Context) => {
-  const supabaseUrl = process.env.SUPABASE_URL!;
+  // ✅ CORREÇÃO: Lê diretamente de process.env, que é a fonte mais confiável
+  const supabaseUrl = process.env.SUPABASE_URL!; 
   const supabaseAnonKey = process.env.SUPABASE_ANON_KEY!;
 
   if (ctx.user) {
@@ -73,7 +80,6 @@ export const createSupabaseClient = (ctx: Context) => {
       },
     });
   }
-  // Se não houver usuário (o que não deve acontecer em 'protectedProcedure'),
-  // retorna um cliente anônimo.
-  return createClient(supabaseUrl, supabaseAnonKey);
+  // Retorna o cliente anônimo singleton (seguro)
+  return getSupabaseClient();
 };
