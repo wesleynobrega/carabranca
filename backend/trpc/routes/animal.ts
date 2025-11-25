@@ -1,10 +1,9 @@
 // backend/trpc/routes/animal.ts (CORRIGIDO)
-import { TRPCError } from '@trpc/server';
+import { protectedProcedure, createTRPCRouter } from '../create-context';
+import type { Animal } from '@/types/models'; 
 import { z } from 'zod';
-// Use o caminho relativo correto para seus tipos
-import { Animal } from '@/types/models';
-// Use o caminho relativo correto para seu create-context
-import { createSupabaseClient, createTRPCRouter, protectedProcedure } from '../create-context';
+import { createSupabaseClient } from '../create-context';
+import { TRPCError } from '@trpc/server';
 import { toCamelCase, toSnakeCase } from '../utils/casing';
 
 export const animalRouter = createTRPCRouter({

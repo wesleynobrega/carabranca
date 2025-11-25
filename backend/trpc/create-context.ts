@@ -2,11 +2,10 @@ import { createClient } from '@supabase/supabase-js';
 import { initTRPC, TRPCError } from "@trpc/server";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import superjson from "superjson";
-// ✅ NOVO IMPORT: Importa a função de inicialização segura
-import { getSupabaseClient } from '../lib/supabase';
+import { getSupabaseClient } from '../lib/supabase'; // Importa a função lazy
 
-// 1. CORREÇÃO TS2339 (Propriedade 'data'): 
-// Define o tipo do User de forma segura, extraindo do retorno da função getUser.
+// Define o tipo do User para ser usado na interface Context
+// 🟢 CORREÇÃO TS2339/TS2445: Obtemos o tipo do retorno da função getUser de forma segura.
 type SupabaseUser = Awaited<ReturnType<ReturnType<typeof getSupabaseClient>['auth']['getUser']>>['data']['user'];
 
 export interface Context {
@@ -23,7 +22,7 @@ export const createContext = async (opts: FetchCreateContextFnOptions): Promise<
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.split(' ')[1];
     
-    // 2. CORREÇÃO TS2339 (Rotina): Acessa a propriedade 'data' corretamente
+    // 2. CORREÇÃO TS2339 (Runtime): Acessa a propriedade 'data' corretamente
     const { data: userData, error } = await supabase.auth.getUser(token);
     
     // Verifica se não houve erro e se há um objeto de usuário válido
@@ -61,10 +60,10 @@ const isAuthed = t.middleware(({ ctx, next }) => {
 
 export const protectedProcedure = t.procedure.use(isAuthed);
 
-// 3. CORREÇÃO TS2445 e TS2339 (Propriedades Protegidas): 
-// Lê as chaves diretamente de process.env, ignorando as propriedades protegidas.
+// 3. HELPER DO CLIENTE ESPECÍFICO DO USUÁRIO (AJUSTADO)
 export const createSupabaseClient = (ctx: Context) => {
-  // ✅ CORREÇÃO: Lê diretamente de process.env, que é a fonte mais confiável
+  // ✅ CORREÇÃO TS2445/TS2339: Lê as chaves diretamente de process.env novamente.
+  // Isso é o mais robusto e simples, já que a leitura dentro da função é segura.
   const supabaseUrl = process.env.SUPABASE_URL!; 
   const supabaseAnonKey = process.env.SUPABASE_ANON_KEY!;
 

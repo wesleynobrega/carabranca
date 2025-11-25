@@ -1,5 +1,8 @@
 .
+├── api
+│   └── index.ts
 ├── app
+│   ├── about.tsx
 │   ├── animal
 │   │   ├── add.tsx
 │   │   ├── [id]
@@ -8,17 +11,20 @@
 │   │   │   ├── edit.tsx
 │   │   │   └── health
 │   │   │       ├── add.tsx
+│   │   │       ├── casing.ts
 │   │   │       ├── [eventId].tsx
 │   │   │       └── index.tsx
 │   │   └── [id].tsx
 │   ├── health-events.tsx
 │   ├── index.tsx
+│   ├── language-picker.tsx
 │   ├── _layout.tsx
 │   ├── locales
 │   │   ├── en.json
 │   │   ├── es.json
 │   │   └── pt-BR.json
 │   ├── login.tsx
+│   ├── profile-info.tsx
 │   ├── register.tsx
 │   └── (tabs)
 │       ├── herd.tsx
@@ -39,54 +45,57 @@
 │   └── trpc
 │       ├── app-router.ts
 │       ├── create-context.ts
-│       └── routes
-│           ├── animal.ts
-│           ├── auth.ts
-│           ├── descendant.ts
-│           ├── examples.ts
-│           ├── example.ts
-│           └── health.ts
+│       ├── routes
+│       │   ├── animal.ts
+│       │   ├── auth.ts
+│       │   ├── descendant.ts
+│       │   ├── examples.ts
+│       │   ├── example.ts
+│       │   └── health.ts
+│       └── utils
+│           └── casing.ts
 ├── bun.lock
 ├── components
 │   ├── Button.tsx
+│   ├── DatePickerInput.tsx
 │   └── Input.tsx
 ├── constants
 │   └── colors.ts
 ├── contexts
 │   └── HerdContext.tsx
+├── eas.json
 ├── .env
+├── .env.production
 ├── .eslintrc.js
 ├── .expo
 │   ├── devices.json
 │   ├── README.md
-│   ├── settings.json
-│   ├── types
-│   │   └── router.d.ts
-│   └── web
-│       └── cache
-│           └── production
-│               └── images
-│                   └── favicon
-│                       ├── favicon-54dffe25b93fb443f832e978cd3fcddf0545b97db22cacae887bc17d25ca5be1-contain-transparent
-│                       │   └── favicon-48.png
-│                       └── favicon-64dd4826110b304d746d42215350ae0fa81d0c132d472f12f629f8e9ca322f79-contain-transparent
-│                           └── favicon-48.png
+│   └── types
+│       └── router.d.ts
 ├── expo-env.d.ts
 ├── .gitignore
 ├── Happy Herd Project Reference.md
+├── .idea
+│   ├── carabranca.iml
+│   ├── .gitignore
+│   ├── misc.xml
+│   ├── modules.xml
+│   ├── vcs.xml
+│   └── workspace.xml
 ├── lib
 │   ├── i18n.ts
 │   └── trpc.tsx
+├── nativewind-env.d.ts
 ├── package.json
 ├── package-lock.json
 ├── README.md
-├── repositories
-│   └── HerdRepository.tsx
 ├── services
 │   └── storage.ts
 ├── tree.txt
 ├── tsconfig.json
-└── types
-    └── models.ts
+├── types
+│   └── models.ts
+├── vercel.json
+└── wesleynobrega.keystore
 
-29 directories, 61 files
+24 directories, 75 files
