@@ -4,11 +4,6 @@ import { cors } from 'hono/cors';
 import { appRouter } from './trpc/app-router';
 import { createContext } from './trpc/create-context';
 
-// Nota: não fazemos checagens condicionais em tempo de execução aqui —
-// o build e o runtime apontam se algo estiver faltando. Para evitar
-// erros de tipagem no `trpcServer` ajustamos o tipo de `createContext`
-// abaixo (cast para `any`) de forma controlada.
-
 const app = new Hono();
 
 // Aplicar CORS a todas as rotas
@@ -18,16 +13,20 @@ app.use('*', cors({
   allowHeaders: ['Authorization', 'Content-Type'],
 }));
 
-// CORREÇÃO: Adicionar o parâmetro 'endpoint'
+// ✅ ROTA DE DIAGNÓSTICO/HEALTH CHECK
+app.get('/', (c) => {
+  return c.json({ status: 'ok', message: 'Hono/tRPC API is running on Vercel' });
+});
+
+// A rota tRPC
 app.use(
   '/api/trpc/*',
   trpcServer({
-    endpoint: '/api/trpc',  // ESSENCIAL para o roteamento correto!
+    endpoint: '/api/trpc',
     router: appRouter,
-    // Cast controlado
     createContext: createContext as any,
   })
 );
 
-// ✅ EXPORTAÇÃO CORRIGIDA para Vercel: exporta a função fetch.
+// ✅ EXPORTAÇÃO CORRIGIDA para Vercel
 export default app.fetch;
