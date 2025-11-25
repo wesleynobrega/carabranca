@@ -2,18 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "backend/honop.ts",
+      "src": "api/index.ts", 
       "use": "@vercel/node"
     }
   ],
-  "routes": [
+  "routes": [    
+    { 
+      "src": "/", 
+      "dest": "/api" 
+    },    
     {
-      "src": "/api/trpc/(.*)",
-      "dest": "/backend/honop.ts"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/backend/honop.ts"
+      "src": "/api/(.*)", 
+      "dest": "/api" 
     }
   ]
 }
