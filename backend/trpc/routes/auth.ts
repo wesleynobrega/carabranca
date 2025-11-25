@@ -1,7 +1,7 @@
 // backend/trpc/routes/auth.ts (CORRIGIDO)
 import { TRPCError } from '@trpc/server';
+import { getSupabaseClient } from 'backend/lib/supabase'; // Caminho Relativo
 import { z } from 'zod';
-import { supabase } from '../../lib/supabase'; // Caminho Relativo
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '../create-context'; // Caminho Relativo
 
 export const authRouter = createTRPCRouter({
@@ -13,7 +13,8 @@ export const authRouter = createTRPCRouter({
       password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
     }))
     .mutation(async ({ input }) => {
-      
+      // ✅ Chamada dentro da função de execução (Lazy Loading)
+      const supabase = getSupabaseClient();       
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: input.email,
         password: input.password,
