@@ -1,7 +1,7 @@
 // backend/trpc/routes/health.ts (CORRIGIDO)
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { HealthEvent } from '@types/models'; // Caminho Relativo
+import { HealthEvent } from '@/types/models';
 import { createSupabaseClient, createTRPCRouter, protectedProcedure } from '../create-context';
 import { toCamelCase, toSnakeCase } from '../utils/casing';
 

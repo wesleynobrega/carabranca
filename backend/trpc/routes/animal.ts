@@ -2,7 +2,7 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 // Use o caminho relativo correto para seus tipos
-import { Animal } from '@types/models';
+import { Animal } from '@/types/models';
 // Use o caminho relativo correto para seu create-context
 import { createSupabaseClient, createTRPCRouter, protectedProcedure } from '../create-context';
 import { toCamelCase, toSnakeCase } from '../utils/casing';
