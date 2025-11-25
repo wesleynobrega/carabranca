@@ -1,18 +1,29 @@
-// backend/lib/supabase.ts (CORRIGIDO)
+// backend/lib/supabase.ts (CORRIGIDO PARA AMBIENTE SERVERLESS)
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY!;
+// 1. Declarar a variável para armazenar a instância
+let supabaseClient: SupabaseClient | null = null;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Supabase URL ou Anon Key não definidas no .env');
+// 2. Exportar uma função que cria a instância apenas se ela ainda não existir
+export function getSupabaseClient(): SupabaseClient {
+  if (supabaseClient) {
+    return supabaseClient;
+  }
+
+  // A leitura de process.env ocorre aqui, dentro de uma função.
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    // Agora o erro é mais descritivo e o runtime falhará propositalmente
+    // se o Vercel não carregar os Secrets (o que deve funcionar)
+    throw new Error('Supabase URL ou Anon Key não definidas no ambiente de execução.');
+  }
+
+  supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+  return supabaseClient;
 }
 
-// 1. EXPORTAR O CLIENTE ANÔNIMO GLOBAL
-// O auth.ts precisa disto para login/registro.
-// O create-context.ts precisa disto para validar o token.
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-// 2. A FUNÇÃO 'createSupabaseClient' FOI MOVIDA
-// (Ela foi movida para 'create-context.ts' para evitar dependência circular)
+// REMOVIDO: const supabaseUrl = process.env.SUPABASE_URL!;
+// REMOVIDO: export const supabase = createClient(supabaseUrl, supabaseAnonKey);
