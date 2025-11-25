@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useRouter, Stack } from 'expo-router';
-import { ArrowLeft, Syringe, Stethoscope, Pill, AlertCircle, FileText, ChevronRight } from 'lucide-react-native';
-import { Colors, Spacing, FontSize, FontWeight, BorderRadius } from '@/constants/colors';
-import { useHerd } from '@/contexts/HerdContext';
-import { HealthEvent } from '@/types/models';
+// app/health-events.tsx (COMPLETO E CORRIGIDO)
 
-// 1. Importar o 'i18n' (para o locale) e o 't' (para tradução)
+import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
+import { useHerd } from '@/contexts/HerdContext';
 import i18n, { t } from '@/lib/i18n';
+import { trpc } from '@/lib/trpc';
+import { HealthEvent } from '@/types/models';
+import { Stack, useFocusEffect, useRouter } from 'expo-router';
+import { AlertCircle, ArrowLeft, ChevronRight, FileText, Pill, Stethoscope, Syringe } from 'lucide-react-native';
+import React, { useCallback } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const eventIcons: Record<HealthEvent['eventType'], any> = {
   vaccination: Syringe,
@@ -27,29 +28,27 @@ const eventColors: Record<HealthEvent['eventType'], string> = {
 
 export default function AllHealthEventsScreen() {
   const router = useRouter();
-  const { getAllHealthEvents, animals } = useHerd();
-  const [healthEvents, setHealthEvents] = useState<HealthEvent[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { animals } = useHerd(); 
 
-  useEffect(() => {
-    loadAllHealthEvents();
-  }, []);
+  const { 
+    data: healthEvents = [], 
+    isLoading, 
+    refetch 
+  } = trpc.health.listAll.useQuery();
 
-  const loadAllHealthEvents = async () => {
-    try {
-      setIsLoading(true);
-      const events = await getAllHealthEvents();
-      setHealthEvents(events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
-    } catch (error) {
-      console.error('Error loading health events:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   const getAnimalInfo = (animalId: string) => {
     return animals.find(a => a.id === animalId);
   };
+
+  const sortedEvents = React.useMemo(() => {
+    return [...healthEvents].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [healthEvents]);
 
   return (
     <View style={styles.container}>
@@ -60,10 +59,9 @@ export default function AllHealthEventsScreen() {
           <ArrowLeft size={24} color={Colors.white} />
         </TouchableOpacity>
         <View style={styles.headerContent}>
-          {/* 2. Textos do Header traduzidos */}
           <Text style={styles.headerTitle}>{t('health.allEventsTitle')}</Text>
           <Text style={styles.headerSubtitle}>
-            {healthEvents.length} {healthEvents.length === 1 ? t('health.eventSingular') : t('health.eventPlural')}
+            {sortedEvents.length} {sortedEvents.length === 1 ? t('health.eventSingular') : t('health.eventPlural')}
           </Text>
         </View>
       </View>
@@ -71,12 +69,12 @@ export default function AllHealthEventsScreen() {
       <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
         {isLoading ? (
           <View style={styles.loadingState}>
-            {/* 3. Loading traduzido (chave comum) */}
+            <ActivityIndicator size="large" color={Colors.primary} />
             <Text style={styles.loadingText}>{t('common.loading')}</Text>
           </View>
-        ) : healthEvents.length > 0 ? (
+        ) : sortedEvents.length > 0 ? (
           <View style={styles.eventsList}>
-            {healthEvents.map((event) => {
+            {sortedEvents.map((event) => {
               const IconComponent = eventIcons[event.eventType];
               const iconColor = eventColors[event.eventType];
               const animal = getAnimalInfo(event.animalId);
@@ -92,7 +90,6 @@ export default function AllHealthEventsScreen() {
                   </View>
                   <View style={styles.eventInfo}>
                     <Text style={styles.eventName}>{event.eventName}</Text>
-                    {/* 4. Mapeamento dinâmico do tipo de evento */}
                     <Text style={styles.eventType}>
                       {t(`health.eventTypes.${event.eventType}`)}
                     </Text>
@@ -103,7 +100,6 @@ export default function AllHealthEventsScreen() {
                     )}
                     <View style={styles.eventMeta}>
                       <Text style={styles.eventDate}>
-                        {/* 5. Usar o locale do i18n para formatar a data */}
                         {new Date(event.date).toLocaleDateString(i18n.currentLocale())}
                       </Text>
                       {event.time && (
@@ -126,7 +122,6 @@ export default function AllHealthEventsScreen() {
           </View>
         ) : (
           <View style={styles.emptyListState}>
-            {/* 6. Estado de lista vazia traduzido */}
             <Stethoscope size={64} color={Colors.textMuted} />
             <Text style={styles.emptyListText}>{t('health.empty.title')}</Text>
             <Text style={styles.emptyListSubtext}>

@@ -1,54 +1,57 @@
-// @/lib/trpc.js (ou .ts)
+// lib/trpc.tsx (COMPLETO E CORRIGIDO)
 
-import { createTRPCReact } from "@trpc/react-query";
-import { httpLink } from "@trpc/client";
-import type { AppRouter } from "@/backend/trpc/app-router"; // Mantenha seu tipo de Rota
-import superjson from "superjson";
-import { useState } from "react";
+"use client";
+
+// 1. CAMINHOS CORRIGIDOS (usando os aliases do tsconfig.json)
+import type { AppRouter } from '@/backend/trpc/app-router';
+import { StorageService } from '@/services/storage';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { httpBatchLink } from "@trpc/client";
+import { createTRPCReact } from "@trpc/react-query";
+import { useMemo } from 'react';
+import superjson from "superjson";
 
-// 1. A criação do 'trpc' continua a mesma
 export const trpc = createTRPCReact<AppRouter>();
 
-// 2. NÃO EXPORTE O trpcClient DAQUI
-
-// 3. CRIE E EXPORTE O NOVO PROVIDER
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
+  const queryClient = useMemo(() => new QueryClient(), []);
   
-  // Usamos useState para garantir que os clientes sejam criados 
-  // APENAS UMA VEZ e SÓ QUANDO O COMPONENTE RENDERIZAR.
-  const [queryClient] = useState(() => new QueryClient());
-  
-  const [trpcClient] = useState(() => {
-    
-    // A lógica de getBaseUrl agora vive aqui dentro
+  const trpcClient = useMemo(() => {
     const getBaseUrl = () => {
-      // Agora o process.env está 100% carregado
       if (process.env.EXPO_PUBLIC_RORK_API_BASE_URL) {
         return process.env.EXPO_PUBLIC_RORK_API_BASE_URL;
       }
-      throw new Error(
-        "No base url found, please set EXPO_PUBLIC_RORK_API_BASE_URL"
-      );
+      throw new Error('No base url found, please set EXPO_PUBLIC_RORK_API_BASE_URL');
     };
 
-    // A criação do cliente tRPC agora vive aqui
     return trpc.createClient({
       links: [
-        httpLink({
+        httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
           transformer: superjson,
+          async headers() {
+            const token = await StorageService.getToken();
+            if (typeof __DEV__ !== 'undefined' && __DEV__) {
+              // eslint-disable-next-line no-console
+              console.debug('[TRPC] headers getToken ->', !!token);
+            }
+            if (token) {
+              return {
+                Authorization: `Bearer ${token}`,
+              };
+            }
+            return {};
+          },
         }),
       ],
     });
-  });
+  }, []);
 
-  // 4. Retorne os providers do tRPC e do React Query
   return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <trpc.Provider client={trpcClient} queryClient={queryClient}>
         {children}
-      </QueryClientProvider>
-    </trpc.Provider>
+      </trpc.Provider>
+    </QueryClientProvider>
   );
 }

@@ -1,24 +1,33 @@
-import { Hono } from "hono";
-import { trpcServer } from "@hono/trpc-server";
-import { cors } from "hono/cors";
-import { appRouter } from "./trpc/app-router";
-import { createContext } from "./trpc/create-context";
+import { trpcServer } from '@hono/trpc-server';
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { appRouter } from './trpc/app-router';
+import { createContext } from './trpc/create-context';
+
+// Nota: não fazemos checagens condicionais em tempo de execução aqui —
+// o build e o runtime apontam se algo estiver faltando. Para evitar
+// erros de tipagem no `trpcServer` ajustamos o tipo de `createContext`
+// abaixo (cast para `any`) de forma controlada.
 
 const app = new Hono();
 
-app.use("*", cors());
+// Aplicar CORS a todas as rotas
+app.use('*', cors({
+  origin: '*',
+  allowMethods: ['GET', 'POST', 'OPTIONS'],
+  allowHeaders: ['Authorization', 'Content-Type'],
+}));
 
+// CORREÇÃO: Adicionar o parâmetro 'endpoint'
 app.use(
-  "/trpc/*",
+  '/api/trpc/*',
   trpcServer({
-    endpoint: "/api/trpc",
+    endpoint: '/api/trpc',  // ESSENCIAL para o roteamento correto!
     router: appRouter,
-    createContext,
+    // Cast controlado
+    createContext: createContext as any,
   })
 );
 
-app.get("/", (c) => {
-  return c.json({ status: "ok", message: "API is running" });
-});
-
-export default app;
+// ✅ EXPORTAÇÃO CORRIGIDA para Vercel: exporta a função fetch.
+export default app.fetch;

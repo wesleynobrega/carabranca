@@ -1,5 +1,12 @@
 {
   "common": {
+    "goBack": "Voltar",
+    "all": "Todos",
+    "years": "anos",
+    "yearSingular": "ano",
+    "yearPlural": "anos",
+    "monthPlural": "meses",
+    "monthSingular": "mês",
     "cancel": "Cancelar",
     "logout": "Sair",
     "comingSoon": "Em Breve",
@@ -20,11 +27,15 @@
     "notesPlaceholderObservations": "Adicione quaisquer anotações ou observações adicionais...",
     "male": "Macho",
     "female": "Fêmea",
-    "searchByIdOrName": "Buscar por ID ou nome..."
+    "searchByIdOrName": "Buscar por ID ou nome...",
+    "owner": "Proprietário"
   },
   "animal": {
+    "dobRequired": "A data de nascimento é obrigatória",
+    "dobInvalid": "Por favor, insira uma data válida no formato {{format}}",
     "profileTitle": "Perfil do Animal",
     "addTitle": "Adicionar Animal",
+    "editTitle": "Editar Animal",
     "notFound": "Animal não encontrado",
     "addDescendantTitle": "Adicionar Descendente",
     "parentAnimal": "Animal Genitor",
@@ -37,15 +48,76 @@
     "parentNotFound": "Animal genitor não encontrado",
     "alert": {
       "selectDescendant": "Por favor, selecione um descendente",
-      "addDescendantFailed": "Falha ao adicionar descendente"
+      "addDescendantFailed": "Falha ao adicionar descendente",
+      "deleteTitle": "Excluir Animal",
+      "deleteMessage": "Tem certeza que quer excluir este animal? Todos os seus registros de saúde e descendência associados serão perdidos.",
+      "deleteFailed": "Falha ao excluir animal."
     },
     "descendantsTitle": "Descendentes",
     "dob": "Nasc.",
     "gender": "Sexo",
-    "type": "Tipo",    
+    "type": "Tipo",
+    "details": {
+      "title": "Detalhes do Animal"
+    },
+    "navigation": {
+      "title": "Gerenciar"
+    },
     "empty": {
+      "noResults": "Tente ajustar sua busca ou filtros.",
       "descendantsTitle": "Nenhum descendente registrado",
-      "descendantsSubtitle": "Toque no botão + abaixo para adicionar um descendente"
+      "descendantsSubtitle": "Toque no botão + abaixo para adicionar um descendente",
+      "herdTitle": "Seu rebanho está vazio",
+      "herdSubtitle": "Comece adicionando seu primeiro animal."
+    },
+    "filter": {
+      "all": "Todos",
+      "adults": "Adultos",
+      "calves": "Bezerros",
+      "forSale": "À Venda"
+    },
+    "status": {
+      "active": "Ativo",
+      "for_sale": "À Venda",
+      "sold": "Vendido",
+      "deceased": "Falecido"
+    },
+    "type": {
+      "cow": "Vaca",
+      "calf": "Bezerro(a)",
+      "bull": "Touro",
+      "heifer": "Novilha",
+      "steer": "Boi"
+    },
+    "form": {
+      "errors": {
+        "tagIdRequired": "O Brinco (Tag ID) é obrigatório.",
+        "dobRequired": "A data de nascimento é obrigatória.",
+        "cameraPermission": "A permissão da câmera é necessária para tirar fotos.",
+        "galleryPermission": "A permissão da galeria é necessária para selecionar fotos."
+      },
+      "alert": {
+        "updateSuccess": "Animal atualizado com sucesso!",
+        "updateFailed": "Falha ao atualizar o animal. Por favor, tente novamente.",
+        "addSuccess": "Animal adicionado com sucesso!",
+        "addFailed": "Falha ao adicionar animal. Por favor, tente novamente."
+      },
+      "editTitle": "Editar Animal",
+      "tagIdLabel": "Brinco (Tag ID) *",
+      "tagIdPlaceholder": "Ex: 123A",
+      "nameLabel": "Nome (Opcional)",
+      "namePlaceholder": "Ex: Mimosa",
+      "dobLabel": "Data de Nascimento *",
+      "typeLabel": "Tipo *",
+      "genderLabel": "Sexo *",
+      "statusLabel": "Status *",
+      "breedLabel": "Raça (Opcional)",
+      "breedPlaceholder": "Ex: Angus",
+      "colorLabel": "Cor (Opcional)",
+      "colorPlaceholder": "Ex: Preto",
+      "weightLabel": "Peso (Opcional)",
+      "saveButton": "Salvar Animal",
+      "editButton": "Editar Animal"
     }
   },
   "register": {
@@ -92,8 +164,10 @@
       "subtitleAnimal": "Toque no botão + abaixo para adicionar um evento de saúde"
     },
     "detail": {
+      "viewTitle": "Detalhes do Evento",
+      "editTitle": "Editar Evento",
       "title": "Evento de Saúde",
-      "notFound": "Evento não encontrado",
+      "notFound": "Evento de saúde não encontrado",
       "editButton": "Editar Evento",
       "errors": {
         "nameRequired": "Por favor, insira um nome para o evento"
@@ -123,6 +197,23 @@
       "alert": {
         "addFailed": "Falha ao adicionar evento de saúde"
       }
+    },
+    "add": {
+      "eventTypeLabel": "Tipo de Evento",
+      "eventNameLabel": "Nome do Evento",
+      "dateLabel": "Data",
+      "timeLabel": "Hora",
+      "veterinarianLabel": "Veterinário",
+      "costLabel": "Custo",
+      "eventNamePlaceholder": "Ex: Vacinação Anual",
+      "descriptionLabel": "Descrição",
+      "descriptionPlaceholder": "Adicione uma descrição do evento...",
+      "veterinarianPlaceholder": "Nome do veterinário",
+      "costPlaceholder": "0.00",
+      "saveButton": "Salvar Evento de Saúde",
+      "alert": {
+        "addFailed": "Falha ao adicionar evento de saúde"
+      }
     }
   },
   "welcome": {
@@ -132,11 +223,60 @@
     "feature2": "Monitore a reprodução e os descendentes",
     "feature3": "Gerencie múltiplos rebanhos sem esforço",
     "feature4": "Offline-first, sempre acessível",
-    "getStarted": "Começar Agora"
+    "getStarted": "Começar Agora",
+    "login": "Login",
+    "createAccount": "Criar Conta"
+  },
+  "login": {
+    "title": "Bem-vindo de volta",
+    "subtitle": "Acesse sua conta para gerenciar seu rebanho.",
+    "emailLabel": "E-mail",
+    "passwordLabel": "Senha",
+    "forgotPassword": "Esqueceu a senha?",
+    "submitButton": "Entrar",
+    "error": {
+      "required": "Por favor, preencha todos os campos.",
+      "invalid": "E-mail ou senha incorretos."
+    },
+    "noAccount": "Não tem uma conta?",
+    "registerLink": "Cadastre-se"
   },
   "tabs": {
     "dashboard": "Painel",
     "herd": "Meu Rebanho",
     "profile": "Perfil"
+  },
+  "dashboard": {
+    "welcomeBack": "Bem-vindo de volta,",
+    "stats": {
+      "totalAnimals": "Total de Animais",
+      "adults": "Adultos",
+      "calves": "Bezerros",
+      "forSale": "À Venda"
+    },
+    "quickActions": {
+      "title": "Ações Rápidas",
+      "viewHerd": "Ver Meu Rebanho",
+      "healthEvents": "Ver Eventos de Saúde"
+    }
+  },
+  "profile": {
+    "logoutTitle": "Confirmar Saída",
+    "logoutMessage": "Tem certeza que deseja sair?",
+    "account": "Conta",
+    "info": "Informações do Perfil",
+    "emailSettings": "Configurações de E-mail",
+    "about": "Sobre",
+    "aboutApp": "Sobre o Happy Herd",
+    "aboutAppMessage": "Versão 1.0.0 - Gestão Inteligente de Rebanho",
+    "comingSoon": {
+      "editProfile": "Funcionalidade de edição de perfil",
+      "emailSettings": "Funcionalidade de configurações de e-mail"
+    },
+    "preferences": "Preferências",
+    "changeLanguage": "Mudar Idioma",
+    "comingSoon.language": "A seleção de idioma será implementada em breve.",
+    "changePasswordPlaceholder": "Deixe em branco para manter a senha atual",
+    "updatePassword": "Atualizar Senha"
   }
 }

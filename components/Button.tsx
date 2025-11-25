@@ -1,16 +1,16 @@
+import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
-import { Colors, Spacing, BorderRadius, FontSize, FontWeight } from '@/constants/colors';
+import { ActivityIndicator, StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
 
 interface ButtonProps {
   title: string;
-  onPress: () => void;
+  onPress?: () => void;
   variant?: 'primary' | 'secondary' | 'outline';
   size?: 'small' | 'medium' | 'large';
   disabled?: boolean;
   loading?: boolean;
-  style?: ViewStyle;
-  textStyle?: TextStyle;
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
 }
 
 export function Button({
@@ -23,7 +23,7 @@ export function Button({
   style,
   textStyle,
 }: ButtonProps) {
-  const buttonStyle: ViewStyle[] = [
+  const buttonStyle: StyleProp<ViewStyle> = [
     styles.button,
     variant === 'primary' && styles.primaryButton,
     variant === 'secondary' && styles.secondaryButton,
@@ -34,7 +34,7 @@ export function Button({
     style,
   ];
 
-  const textStyles: TextStyle[] = [
+  const textStyles: StyleProp<TextStyle> = [
     styles.text,
     variant === 'primary' && styles.primaryText,
     variant === 'secondary' && styles.secondaryText,

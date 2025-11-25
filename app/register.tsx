@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Input } from '@/components/Input';
-import { Button } from '@/components/Button';
-import { Colors, Spacing, FontSize, FontWeight } from '@/constants/colors';
-import { useHerd } from '@/contexts/HerdContext';
+// app/register.tsx (CORRETO - Nenhuma alteração necessária)
 
-// 1. Importar a função de tradução
+import { Button } from '@/components/Button';
+import { Input } from '@/components/Input';
+import { Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
+import { useHerd } from '@/contexts/HerdContext';
 import { t } from '@/lib/i18n';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -30,7 +30,6 @@ export default function RegisterScreen() {
   const validate = (): boolean => {
     const newErrors: typeof errors = {};
 
-    // 2. Usar 't' para as mensagens de erro
     if (!fullName.trim()) {
       newErrors.fullName = t('register.errors.fullNameRequired');
     }
@@ -60,17 +59,20 @@ export default function RegisterScreen() {
   };
 
   const handleRegister = async () => {
+    console.log('[Register] handleRegister start', { fullName, email });
     if (!validate()) return;
 
     try {
       setLoading(true);
-      await register(fullName, email, password);
-      // 3. Usar 't' para os alertas
+      // Esta chamada agora aciona o backend tRPC automaticamente
+      await register(fullName, email, password); 
+      
       Alert.alert(t('common.success'), t('register.alert.successMessage'));
       router.replace('/(tabs)');
     } catch (error) {
       console.error('Registration error:', error);
-      Alert.alert(t('common.error'), t('register.alert.errorMessage'));
+      // O erro do tRPC (ex: "E-mail já existe") será capturado aqui
+      Alert.alert(t('common.error'), (error as Error).message || t('register.alert.errorMessage'));
     } finally {
       setLoading(false);
     }
@@ -82,7 +84,6 @@ export default function RegisterScreen() {
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
     >
-      {/* 4. Usar 't' para todo o JSX */}
       <Text style={styles.title}>{t('register.formTitle')}</Text>
       <Text style={styles.description}>
         {t('register.description')}

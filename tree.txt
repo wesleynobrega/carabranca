@@ -1,13 +1,16 @@
 .
 ├── app
 │   ├── animal
-│   │   └── [id]
-│   │       ├── add-descendant.tsx
-│   │       ├── descendant.tsx
-│   │       └── health
-│   │           ├── add.tsx
-│   │           ├── [eventId].tsx
-│   │           └── index.tsx
+│   │   ├── add.tsx
+│   │   ├── [id]
+│   │   │   ├── add-descendant.tsx
+│   │   │   ├── descendant.tsx
+│   │   │   ├── edit.tsx
+│   │   │   └── health
+│   │   │       ├── add.tsx
+│   │   │       ├── [eventId].tsx
+│   │   │       └── index.tsx
+│   │   └── [id].tsx
 │   ├── health-events.tsx
 │   ├── index.tsx
 │   ├── _layout.tsx
@@ -15,6 +18,7 @@
 │   │   ├── en.json
 │   │   ├── es.json
 │   │   └── pt-BR.json
+│   ├── login.tsx
 │   ├── register.tsx
 │   └── (tabs)
 │       ├── herd.tsx
@@ -30,13 +34,18 @@
 │       └── splash-icon.png
 ├── backend
 │   ├── honop.ts
+│   ├── lib
+│   │   └── supabase.ts
 │   └── trpc
+│       ├── app-router.ts
+│       ├── create-context.ts
 │       └── routes
-│           └── example
-│               └── hi
-│                   ├── app-router.ts
-│                   ├── create-context.ts
-│                   └── routes.ts
+│           ├── animal.ts
+│           ├── auth.ts
+│           ├── descendant.ts
+│           ├── examples.ts
+│           ├── example.ts
+│           └── health.ts
 ├── bun.lock
 ├── components
 │   ├── Button.tsx
@@ -58,10 +67,13 @@
 │           └── production
 │               └── images
 │                   └── favicon
-│                       └── favicon-54dffe25b93fb443f832e978cd3fcddf0545b97db22cacae887bc17d25ca5be1-contain-transparent
+│                       ├── favicon-54dffe25b93fb443f832e978cd3fcddf0545b97db22cacae887bc17d25ca5be1-contain-transparent
+│                       │   └── favicon-48.png
+│                       └── favicon-64dd4826110b304d746d42215350ae0fa81d0c132d472f12f629f8e9ca322f79-contain-transparent
 │                           └── favicon-48.png
 ├── expo-env.d.ts
 ├── .gitignore
+├── Happy Herd Project Reference.md
 ├── lib
 │   ├── i18n.ts
 │   └── trpc.tsx
@@ -77,4 +89,4 @@
 └── types
     └── models.ts
 
-29 directories, 49 files
+29 directories, 61 files

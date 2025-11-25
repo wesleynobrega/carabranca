@@ -1,232 +1,255 @@
-// contexts/HerdContext.tsx (COMPLETO E CORRIGIDO)
+'use client';
 
-// 1. Importação do hook em vez do objeto
-import { useHerdRepository } from '@/repositories/HerdRepository';
-import { Animal, AnimalFilter, HealthEvent, User } from '@/types/models';
-import createContextHook from '@nkzw/create-context-hook';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { setAppLocale } from '@/lib/i18n';
+import { trpc } from '@/lib/trpc';
+import { StorageService } from '@/services/storage';
+import type { Animal, AnimalFilter, User } from '@/types/models';
+import { useQueryClient } from '@tanstack/react-query';
+import * as Localization from 'expo-localization';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
-export const [HerdProvider, useHerd] = createContextHook(() => {
-  // 2. Repositório injetado via hook
-  const herdRepository = useHerdRepository();
+// --- Interface e Contexto (Sem alterações) ---
+interface HerdContextType {
+  user: User | null;
+  animals: Animal[];
+  isLoading: boolean;
+  locale: string; 
+  changeLocale: (newLocale: string) => Promise<void>; 
+  filter: AnimalFilter;
+  searchQuery: string;
+  register: (fullName: string, email: string, password: string) => Promise<User | undefined>;
+  login: (email: string, password: string) => Promise<User | undefined>;
+  logout: () => Promise<void>;
+  addAnimal: (animal: Omit<Animal, 'id' | 'createdAt' | 'updatedAt' | 'userId'>) => Promise<Animal | undefined>;
+  updateAnimal: (id: string, updates: Partial<Animal>) => Promise<Animal | undefined>;
+  deleteAnimal: (id: string) => Promise<void>;
+  getAnimalById: (id: string) => Animal | undefined;
+  refreshAnimals: () => Promise<any>;
+  setFilter: (filter: AnimalFilter) => void;
+  setSearchQuery: (query: string) => void;
+}
+const HerdContext = createContext<HerdContextType | undefined>(undefined);
 
+// --- Componente Provedor (Corrigido) ---
+export function HerdProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient(); 
+  const DEBUG_DISABLE_AUTO_QUERIES = false;
+
+  // --- Estados ---
   const [user, setUser] = useState<User | null>(null);
-  const [animals, setAnimals] = useState<Animal[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [token, setToken] = useState<string | null>(null);
+  const [locale, setLocale] = useState<string>('pt-BR'); 
   const [filter, setFilter] = useState<AnimalFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false); 
+  const [isBootstrapping, setIsBootstrapping] = useState(true);
 
-  // 3. 'herdRepository' adicionado às dependências dos callbacks
-  const loadUser = useCallback(async () => {
-    try {
-      const currentUser = await herdRepository.getCurrentUser();
-      setUser(currentUser);
-    } catch (error) {
-      console.error('Error loading user:', error);
-    }
-  }, [herdRepository]);
+  // --- Setters Seguros ---
+  const setUserSafe = useCallback((next: User | null) => {
+    setUser((prev) => (prev === next || (prev && next && prev.id === next.id) ? prev : next));
+  }, []);
+  const setTokenSafe = useCallback((next: string | null) => {
+    setToken((prev) => (prev === next ? prev : next));
+  }, []);
 
-  const loadAnimals = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const allAnimals = await herdRepository.getAllAnimals();
-      setAnimals(allAnimals);
-    } catch (error) {
-      console.error('Error loading animals:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [herdRepository]);
+  // --- Mutações tRPC ---
+  const loginMutation = trpc.auth.login.useMutation();
+  const registerMutation = trpc.auth.register.useMutation();
+  const createAnimalMutation = trpc.animal.create.useMutation();
+  const updateAnimalMutation = trpc.animal.update.useMutation();
+  const deleteAnimalMutation = trpc.animal.delete.useMutation();
+
+  // trpc utils para invalidar queries de forma segura
+  const trpcUtils = trpc.useContext();
+
+  // --- Queries tRPC ---
+  const { data: animalsFromQuery = [], refetch: refetchAnimals, isLoading: isLoadingAnimals } =
+    trpc.animal.list.useQuery(undefined, { enabled: !DEBUG_DISABLE_AUTO_QUERIES && !!user && !!token });
+
+  const { data: userFromToken, error: meError, isLoading: isLoadingSession } =
+    trpc.auth.me.useQuery(undefined, { enabled: !DEBUG_DISABLE_AUTO_QUERIES && !!token && !isBootstrapping, retry: false });
+
+  // --- Effects (Corrigidos) ---
+  useEffect(() => {
+    (async () => {
+      try {
+        const storedToken = await StorageService.getToken();
+        setTokenSafe(storedToken);
+        const storedLocale = await StorageService.getLocale();
+        if (storedLocale) {
+          setLocale(setAppLocale(storedLocale));
+        } else {
+          const deviceLocale = Localization.getLocales()[0]?.languageTag || 'pt-BR';
+          setLocale(setAppLocale(deviceLocale));
+        }
+      } finally {
+        setIsBootstrapping(false);
+      }
+    })();
+  }, [setTokenSafe]);
 
   useEffect(() => {
-    loadUser();
-    loadAnimals();
-  }, [loadUser, loadAnimals]);
+    if (userFromToken) {
+      setUserSafe(userFromToken as unknown as User);
+    } else if (meError) {
+      setUserSafe(null);
+      StorageService.clearToken().catch(() => {});
+      setTokenSafe(null);
+    }
+  }, [userFromToken, meError, setUserSafe, setTokenSafe]);
+
+  // --- Estado de Loading ---
+  const isLoading = useMemo(() => isBootstrapping || isLoggingIn || isLoadingSession || (!!user && isLoadingAnimals),
+    [isBootstrapping, isLoggingIn, isLoadingSession, user, isLoadingAnimals]);
+
+  // stable animals ref
+  const animalsRef = useRef<Animal[]>(animalsFromQuery);
+  useEffect(() => { animalsRef.current = animalsFromQuery; }, [animalsFromQuery]);
+  const getAnimalById = useCallback((id: string) => animalsRef.current.find(a => a.id === id), [animalsRef]);
+
+  // --- AÇÕES (CORRIGIDAS) ---
 
   const register = useCallback(async (fullName: string, email: string, password: string) => {
-    try {
-      const newUser = await herdRepository.registerUser(fullName, email, password);
-      setUser(newUser);
-      return newUser;
-    } catch (error) {
-      console.error('Error registering user:', error);
-      throw error;
+    const resp = await registerMutation.mutateAsync({ fullName, email, password });
+    const newUser = resp?.user as unknown as User | undefined;
+    const tok = resp?.token;
+    if (tok) {
+      await StorageService.setToken(tok);
+      setTokenSafe(tok);
     }
-  }, [herdRepository]);
+    if (newUser) setUserSafe(newUser);
+    return newUser;
+  }, [registerMutation, setTokenSafe, setUserSafe]);
+
+  const login = useCallback(async (email: string, password: string) => {
+    console.log('[HerdContext] login called', { email });
+    if (isLoggingIn) return undefined;
+    setIsLoggingIn(true);
+    try {
+      const resp = await loginMutation.mutateAsync({ email, password });
+      const newUser = resp?.user as unknown as User | undefined;
+      const tok = resp?.token;
+      if (tok) {
+        await StorageService.setToken(tok);
+        setTokenSafe(tok);
+      }
+      if (newUser) setUserSafe(newUser);
+      return newUser;
+    } finally {
+      setIsLoggingIn(false);
+    }
+  }, [loginMutation, setTokenSafe, setUserSafe, isLoggingIn]); // isLoggingIn PODE ficar aqui
 
   const logout = useCallback(async () => {
-    try {
-      await herdRepository.logout();
-      setUser(null);
-      setAnimals([]);
-    } catch (error) {
-      console.error('Error logging out:', error);
-      throw error;
-    }
-  }, [herdRepository]);
+    await StorageService.clearAllData().catch(() => {});
+    setTokenSafe(null);
+    setUserSafe(null);
+    setLocale(setAppLocale('pt-BR'));
+    try { 
+      await queryClient.cancelQueries(); 
+    } catch (e) { /* ignore */ }
+  }, [setTokenSafe, setUserSafe, queryClient]); // queryClient PODE ficar, ele é estável
 
-  const addAnimal = useCallback(async (animal: Omit<Animal, 'id' | 'createdAt' | 'updatedAt'>) => {
+  
+  // 
+  // =================================================================
+  // AQUI ESTÁ A CORREÇÃO DO LOOP
+  // =================================================================
+  //
+
+  const addAnimal = useCallback(async (animal: Omit<Animal, 'id' | 'createdAt' | 'updatedAt' | 'userId'>) => {
     try {
-      const newAnimal = await herdRepository.addAnimal(animal);
-      setAnimals(prev => [...prev, newAnimal]);
-      return newAnimal;
+      const newAnimal = await createAnimalMutation.mutateAsync(animal as any);
+      await trpcUtils.animal.list.invalidate();
+      return newAnimal as Animal;
     } catch (error) {
       console.error('Error adding animal:', error);
       throw error;
     }
-  }, [herdRepository]);
+  }, [createAnimalMutation, trpcUtils]); 
 
   const updateAnimal = useCallback(async (id: string, updates: Partial<Animal>) => {
     try {
-      const updated = await herdRepository.updateAnimal(id, updates);
-      setAnimals(prev => prev.map(a => a.id === id ? updated : a));
-      return updated;
+      const updatedAnimal = await updateAnimalMutation.mutateAsync({ id, updates });
+      await trpcUtils.animal.list.invalidate();
+      await trpcUtils.animal.get.invalidate({ id });
+      return updatedAnimal as Animal;
     } catch (error) {
       console.error('Error updating animal:', error);
       throw error;
     }
-  }, [herdRepository]);
+  }, [updateAnimalMutation, trpcUtils]); 
 
   const deleteAnimal = useCallback(async (id: string) => {
     try {
-      await herdRepository.deleteAnimal(id);
-      setAnimals(prev => prev.filter(a => a.id !== id));
+      await deleteAnimalMutation.mutateAsync({ id });
+      await trpcUtils.animal.list.invalidate();
     } catch (error) {
       console.error('Error deleting animal:', error);
       throw error;
     }
-  }, [herdRepository]);
+  }, [deleteAnimalMutation, trpcUtils]); 
 
-  const getAnimalById = useCallback((id: string): Animal | undefined => {
-    return animals.find(a => a.id === id);
-  }, [animals]);
-
-  const addHealthEvent = useCallback(async (event: Omit<HealthEvent, 'id' | 'createdAt'>) => {
-    try {
-      return await herdRepository.addHealthEvent(event);
-    } catch (error) {
-      console.error('Error adding health event:', error);
-      throw error;
-    }
-  }, [herdRepository]);
-
-  const getHealthEvents = useCallback(async (animalId: string): Promise<HealthEvent[]> => {
-    try {
-      return await herdRepository.getHealthEvents(animalId);
-    } catch (error) {
-      console.error('Error getting health events:', error);
-      return [];
-    }
-  }, [herdRepository]);
-
-  const getAllHealthEvents = useCallback(async (): Promise<HealthEvent[]> => {
-    try {
-      return await herdRepository.getAllHealthEvents();
-    } catch (error) {
-      console.error('Error getting all health events:', error);
-      return [];
-    }
-  }, [herdRepository]);
-
-  const getDescendants = useCallback(async (parentId: string): Promise<Animal[]> => {
-    try {
-      return await herdRepository.getDescendants(parentId);
-    } catch (error) {
-      console.error('Error getting descendants:', error);
-      return [];
-    }
-  }, [herdRepository]);
-
-  const addDescendant = useCallback(async (parentId: string, childId: string, relationship: 'mother' | 'father') => {
-    try {
-      return await herdRepository.addDescendant(parentId, childId, relationship);
-    } catch (error) {
-      console.error('Error adding descendant:', error);
-      throw error;
-    }
-  }, [herdRepository]);
-
-  // 4. 'useMemo' atualizado com todos os callbacks que dependem do 'herdRepository'
-  return useMemo(() => ({
+  const changeLocale = useCallback(async (newLocale: string) => {
+    const actualLocale = setAppLocale(newLocale);
+    setLocale(actualLocale);
+    await StorageService.setLocale(actualLocale);
+  }, []);
+  
+  // --- Valor do Contexto (Corrigido) ---
+  const value = useMemo<HerdContextType>(() => ({
     user,
-    animals,
+    animals: animalsFromQuery,
     isLoading,
+    locale,
+    changeLocale,
     filter,
+    searchQuery,
+    register,
+    login,
+    logout,
+    addAnimal,
+    updateAnimal,
+    deleteAnimal,
+    getAnimalById,
+    refreshAnimals: refetchAnimals,
     setFilter,
-    searchQuery,
     setSearchQuery,
-    register,
-    logout,
-    addAnimal,
-    updateAnimal,
-    deleteAnimal,
-    getAnimalById,
-    addHealthEvent,
-    getHealthEvents,
-    getAllHealthEvents,
-    getDescendants,
-    addDescendant,
-    refreshAnimals: loadAnimals,
   }), [
-    user,
-    animals,
-    isLoading,
-    filter,
-    searchQuery,
-    register,
-    logout,
-    addAnimal,
-    updateAnimal,
-    deleteAnimal,
-    getAnimalById,
-    addHealthEvent,
-    getHealthEvents,
-    getAllHealthEvents,
-    getDescendants,
-    addDescendant,
-    loadAnimals,
+    user, animalsFromQuery, isLoading, locale, filter, searchQuery,
+    register, login, logout, addAnimal, updateAnimal, deleteAnimal, 
+    getAnimalById, refetchAnimals, changeLocale
   ]);
-});
+
+  if (isBootstrapping) return null;
+
+  return <HerdContext.Provider value={value}>{children}</HerdContext.Provider>;
+}
+
+// --- Hooks de Consumo (Corrigidos) ---
+export function useHerd(): HerdContextType {
+  const ctx = useContext(HerdContext);
+  if (!ctx) throw new Error('useHerd must be used within HerdProvider');
+  return ctx;
+}
 
 export function useFilteredAnimals() {
-  const { animals, filter, searchQuery } = useHerd();
-  // 5. Injete o repositório aqui também
-  const herdRepository = useHerdRepository();
-  const [descendants, setDescendants] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (filter === 'calf') {
-      const loadDescendantIds = async () => {
-        try {
-          const descendantAnimals = await Promise.all(
-            animals.map(async (animal) => {
-              // 6. Use o repositório injetado
-              const children = await herdRepository.getDescendants(animal.id);
-              return children.map(c => c.id);
-            })
-          );
-          const flatDescendantIds = descendantAnimals.flat();
-          setDescendants(flatDescendantIds);
-        } catch (error) {
-          console.error('Error loading descendants:', error);
-        }
+  const { user, animals, filter, searchQuery } = useHerd();
+  const { data: descendantIds = [] } = trpc.descendant.listAll.useQuery(undefined, { enabled: !!user && filter === 'calf' });
+  return useMemo(() => {
+    return animals.filter(animal => {
+      const matchesFilter = () => {
+        if (filter === 'all') return true;
+        if (filter === 'cow') return animal.type === 'cow' || animal.type === 'bull';
+        if (filter === 'for_sale') return animal.status === 'for_sale';
+        if (filter === 'calf') return animal.type === 'calf' || descendantIds.includes(animal.id);
+        return false;
       };
-      loadDescendantIds();
-    }
-  }, [filter, animals, herdRepository]); // 7. Adicione 'herdRepository'
-
-  return animals.filter(animal => {
-    const matchesFilter = 
-      filter === 'all' ||
-      (filter === 'cow' && (animal.type === 'cow' || animal.type === 'bull')) ||
-      (filter === 'calf' && (animal.type === 'calf' || descendants.includes(animal.id))) ||
-      (filter === 'for_sale' && animal.status === 'for_sale');
-
-    const matchesSearch = 
-      searchQuery === '' ||
-      animal.tagId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      animal.name?.toLowerCase().includes(searchQuery.toLowerCase()) || false;
-
-    return matchesFilter && matchesSearch;
-  });
+      const lowerQuery = searchQuery.toLowerCase();
+      const matchesSearch = !searchQuery || 
+        (animal.tagId && animal.tagId.toLowerCase().includes(lowerQuery)) || 
+        (animal.name && animal.name.toLowerCase().includes(lowerQuery));
+      return matchesFilter() && matchesSearch;
+    });
+  }, [animals, filter, searchQuery, descendantIds]);
 }

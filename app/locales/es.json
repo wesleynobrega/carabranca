@@ -1,5 +1,12 @@
 {
   "common": {
+    "goBack": "Volver",
+    "all": "Todos",
+    "years": "años",
+    "yearSingular": "año",
+    "yearPlural": "años",
+    "monthPlural": "meses",
+    "monthSingular": "mes",
     "cancel": "Cancelar",
     "logout": "Salir",
     "comingSoon": "Próximamente",
@@ -20,11 +27,15 @@
     "notesPlaceholderObservations": "Añadir notas u observaciones adicionales...",
     "male": "Macho",
     "female": "Hembra",
-    "searchByIdOrName": "Buscar por ID o nombre..."
+    "searchByIdOrName": "Buscar por ID o nombre...",
+    "owner": "Propietario"
   },
   "animal": {
+    "dobRequired": "La fecha de nacimiento es obligatoria",
+    "dobInvalid": "Por favor, ingrese una fecha válida en formato {{format}}",
     "profileTitle": "Perfil del Animal",
     "addTitle": "Añadir Animal",
+    "editTitle": "Editar Animal",
     "notFound": "Animal no encontrado",
     "addDescendantTitle": "Añadir Descendiente",
     "parentAnimal": "Progenitor",
@@ -37,15 +48,76 @@
     "parentNotFound": "Progenitor no encontrado",
     "alert": {
       "selectDescendant": "Por favor, seleccione un descendiente",
-      "addDescendantFailed": "Error al añadir descendiente"
+      "addDescendantFailed": "Error al añadir descendiente",
+      "deleteTitle": "Eliminar Animal",
+      "deleteMessage": "¿Estás seguro de que quieres eliminar este animal? Se perderán todos los registros de salud y descendencia asociados.",
+      "deleteFailed": "Error al eliminar el animal."
     },
     "descendantsTitle": "Descendientes",
     "dob": "F. Nac.",
     "gender": "Sexo",
     "type": "Tipo",
+    "details": {
+      "title": "Detalles del Animal"
+    },
+    "navigation": {
+      "title": "Gestionar"
+    },
     "empty": {
+      "noResults": "Intenta ajustar tu búsqueda o filtros.",
       "descendantsTitle": "No hay descendientes registrados",
-      "descendantsSubtitle": "Toca el botón + para añadir un descendiente"
+      "descendantsSubtitle": "Toca el botón + para añadir un descendiente",
+      "herdTitle": "Tu rebaño está vacío",
+      "herdSubtitle": "Comienza añadiendo tu primer animal."
+    },
+    "filter": {
+      "all": "Todos",
+      "adults": "Adultos",
+      "calves": "Terneros",
+      "forSale": "En Venta"
+    },
+    "status": {
+      "active": "Activo",
+      "for_sale": "En Venta",
+      "sold": "Vendido",
+      "deceased": "Fallecido"
+    },
+    "type": {
+      "cow": "Vaca",
+      "calf": "Ternero(a)",
+      "bull": "Toro",
+      "heifer": "Novilla",
+      "steer": "Novillo"
+    },
+    "form": {
+      "errors": {
+        "tagIdRequired": "El ID de etiqueta es obligatorio.",
+        "dobRequired": "La fecha de nacimiento es obligatoria.",
+        "cameraPermission": "Se necesita permiso de cámara para tomar fotos.",
+        "galleryPermission": "Se necesita permiso de galería para seleccionar fotos."
+      },
+      "alert": {
+        "updateSuccess": "¡Animal actualizado con éxito!",
+        "updateFailed": "Error al actualizar el animal. Por favor, inténtelo de nuevo.",
+        "addSuccess": "¡Animal añadido con éxito!",
+        "addFailed": "Error al añadir animal. Por favor, inténtelo de nuevo."
+      },
+      "editTitle": "Editar Animal",
+      "tagIdLabel": "ID de Etiqueta *",
+      "tagIdPlaceholder": "Ej: 123A",
+      "nameLabel": "Nombre (Opcional)",
+      "namePlaceholder": "Ej: Bessie",
+      "dobLabel": "Fecha de Nacimiento *",
+      "typeLabel": "Tipo *",
+      "genderLabel": "Sexo *",
+      "statusLabel": "Estado *",
+      "breedLabel": "Raza (Opcional)",
+      "breedPlaceholder": "Ej: Angus",
+      "colorLabel": "Color (Opcional)",
+      "colorPlaceholder": "Ej: Negro",
+      "weightLabel": "Peso (Opcional)",
+      "saveButton": "Guardar Animal",
+      "editButton": "Editar Animal"
     }
   },
   "register": {
@@ -126,17 +198,66 @@
     }
   },
   "welcome": {
-    "subtitle": "Gestión Inteligente de Ganado",
-    "description": "Gestiona tu ganado, rastrea registros de salud, monitorea la cría y mantén tu rebaño próspero con nuestra plataforma integral de gestión.",
-    "feature1": "Rastrea la salud e historial individual del animal",
-    "feature2": "Monitorea la cría y descendientes",
-    "feature3": "Gestiona múltiples rebaños sin esfuerzo",
+    "subtitle": "Gestión Inteligente de Rebaño",
+    "description": "Gestione su ganado, rastree registros de salud, monitoree la cría y mantenga su rebaño próspero con nuestra plataforma completa de gerenciamento.",
+    "feature1": "Rastree la salud y el historial individual del animal",
+    "feature2": "Monitoree la cría y los descendentes",
+    "feature3": "Gerencie múltiplos rebaños sin esfuerzo",
     "feature4": "Offline-first, siempre accesible",
-    "getStarted": "Comenzar"
+    "getStarted": "Comenzar Ahora",
+    "login": "Ingresar",
+    "createAccount": "Crear Cuenta"
+  },
+  "login": {
+    "title": "Bienvenido de vuelta",
+    "subtitle": "Accede a tu cuenta para gestionar tu rebaño.",
+    "emailLabel": "Correo electrónico",
+    "passwordLabel": "Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "submitButton": "Ingresar",
+    "error": {
+      "required": "Por favor, rellena todos los campos.",
+      "invalid": "Correo electrónico o contraseña incorrectos."
+    },
+    "noAccount": "¿No tienes una cuenta?",
+    "registerLink": "Regístrate"
   },
   "tabs": {
     "dashboard": "Panel",
     "herd": "Mi Rebaño",
     "profile": "Perfil"
+  },
+  "dashboard": {
+    "welcomeBack": "Bienvenido de vuelta,",
+    "stats": {
+      "totalAnimals": "Animales Totales",
+      "adults": "Adultos",
+      "calves": "Terneros",
+      "forSale": "En Venta"
+    },
+    "quickActions": {
+      "title": "Acciones Rápidas",
+      "viewHerd": "Ver Mi Rebaño",
+      "healthEvents": "Ver Eventos de Salud"
+    }
+  },
+  "profile": {
+    "logoutTitle": "Confirmar Salida",
+    "logoutMessage": "¿Estás seguro de que quieres salir?",
+    "account": "Cuenta",
+    "info": "Información del Perfil",
+    "emailSettings": "Configuración de Correo",
+    "about": "Acerca de",
+    "aboutApp": "Acerca de Happy Herd",
+    "aboutAppMessage": "Versión 1.0.0 - Gestión Inteligente de Ganado",
+    "comingSoon": {
+      "editProfile": "Funcionalidad de edición de perfil",
+      "emailSettings": "Funcionalidad de configuración de correo"
+    },
+    "preferences": "Preferencias",
+    "changeLanguage": "Cambiar Idioma",
+    "comingSoon.language": "La selección de idioma se implementará pronto.",
+    "changePasswordPlaceholder": "Dejar en blanco para mantener la contraseña",
+    "updatePassword": "Actualizar Contraseña"
   }
 }

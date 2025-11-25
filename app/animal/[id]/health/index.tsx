@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
-import { ArrowLeft, Plus, Syringe, Stethoscope, Pill, AlertCircle, FileText, ChevronRight } from 'lucide-react-native';
-import { Colors, Spacing, FontSize, FontWeight, BorderRadius } from '@/constants/colors';
-import { useHerd } from '@/contexts/HerdContext';
-import { HealthEvent } from '@/types/models';
+// app/animal/[id]/health/index.tsx (COMPLETO E CORRIGIDO)
 
-// 1. Importar i18n e t
+import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
+import { useHerd } from '@/contexts/HerdContext';
 import i18n, { t } from '@/lib/i18n';
+import { trpc } from '@/lib/trpc';
+import { HealthEvent } from '@/types/models';
+import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { AlertCircle, ArrowLeft, ChevronRight, FileText, Pill, Plus, Stethoscope, Syringe } from 'lucide-react-native';
+import React, { useCallback } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const eventIcons: Record<HealthEvent['eventType'], any> = {
   vaccination: Syringe,
@@ -26,36 +27,49 @@ const eventColors: Record<HealthEvent['eventType'], string> = {
 };
 
 export default function HealthRecordsScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id: animalId } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { getAnimalById, getHealthEvents } = useHerd();
-  const [healthEvents, setHealthEvents] = useState<HealthEvent[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  const animal = getAnimalById(id!);
+  const { getAnimalById } = useHerd();
 
-  useEffect(() => {
-    loadHealthEvents();
-  }, [id]);
+  // Adicionado estado de carregamento para animalId
+  if (!animalId) {
+    return (
+      <View style={styles.container}>
+        <Stack.Screen options={{ headerShown: false }} />
+        <View style={styles.loadingState}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+          <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        </View>
+      </View>
+    );
+  }
 
-  const loadHealthEvents = async () => {
-    try {
-      setIsLoading(true);
-      const events = await getHealthEvents(id!);
-      setHealthEvents(events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
-    } catch (error) {
-      console.error('Error loading health events:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const animal = getAnimalById(animalId);
 
-  if (!animal) {
+  const { 
+    data: healthEvents = [], 
+    isLoading, 
+    refetch 
+  } = trpc.health.list.useQuery(
+    { animalId: animalId },
+    { enabled: !!animalId } 
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
+
+  const sortedEvents = React.useMemo(() => {
+    return [...healthEvents].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [healthEvents]);
+
+  if (!animal && !isLoading) { 
     return (
       <View style={styles.container}>
         <Stack.Screen options={{ headerShown: false }} />
         <View style={styles.emptyState}>
-          {/* 2. Usar 't' para animal não encontrado */}
           <Text style={styles.emptyText}>{t('animal.notFound')}</Text>
         </View>
       </View>
@@ -71,21 +85,20 @@ export default function HealthRecordsScreen() {
           <ArrowLeft size={24} color={Colors.white} />
         </TouchableOpacity>
         <View style={styles.headerContent}>
-          {/* 3. Usar 't' para o título (chave já existe) */}
           <Text style={styles.headerTitle}>{t('health.recordsTitle')}</Text>
-          <Text style={styles.headerSubtitle}>#{animal.tagId} {animal.name ? `- ${animal.name}` : ''}</Text>
+          <Text style={styles.headerSubtitle}>#{animal?.tagId} {animal?.name ? `- ${animal.name}` : ''}</Text>
         </View>
       </View>
 
       <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
         {isLoading ? (
           <View style={styles.loadingState}>
-            {/* 4. Usar 't' para loading (chave já existe) */}
+            <ActivityIndicator size="large" color={Colors.primary} />
             <Text style={styles.loadingText}>{t('common.loading')}</Text>
           </View>
-        ) : healthEvents.length > 0 ? (
+        ) : sortedEvents.length > 0 ? (
           <View style={styles.eventsList}>
-            {healthEvents.map((event) => {
+            {sortedEvents.map((event) => {
               const IconComponent = eventIcons[event.eventType];
               const iconColor = eventColors[event.eventType];
 
@@ -93,18 +106,21 @@ export default function HealthRecordsScreen() {
                 <TouchableOpacity
                   key={event.id}
                   style={styles.eventCard}
-                  onPress={() => router.push(`/animal/${id}/health/${event.id}` as any)}
+                  onPress={() => router.push(`/animal/${animalId}/health/${event.id}` as any)}
                 >
                   <View style={[styles.eventIcon, { backgroundColor: iconColor + '20' }]}>
                     <IconComponent size={24} color={iconColor} />
                   </View>
                   <View style={styles.eventInfo}>
                     <Text style={styles.eventName}>{event.eventName}</Text>
-                    {/* 5. Usar 't' para o tipo de evento (chave já existe) */}
                     <Text style={styles.eventType}>{t(`health.eventTypes.${event.eventType}`)}</Text>
+                    {animal && (
+                      <Text style={styles.animalInfo}>
+                        #{animal.tagId}{animal.name ? ` - ${animal.name}` : ''}
+                      </Text>
+                    )}
                     <View style={styles.eventMeta}>
                       <Text style={styles.eventDate}>
-                        {/* 6. Usar o locale do i18n para formatar a data */}
                         {new Date(event.date).toLocaleDateString(i18n.currentLocale())}
                       </Text>
                       {event.time && (
@@ -127,7 +143,6 @@ export default function HealthRecordsScreen() {
           </View>
         ) : (
           <View style={styles.emptyListState}>
-            {/* 7. Usar 't' para o estado de lista vazia (chaves já existem) */}
             <Stethoscope size={64} color={Colors.textMuted} />
             <Text style={styles.emptyListText}>{t('health.empty.titleAnimal')}</Text>
             <Text style={styles.emptyListSubtext}>
@@ -139,7 +154,7 @@ export default function HealthRecordsScreen() {
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => router.push(`/animal/${id}/health/add` as any)}
+        onPress={() => router.push(`/animal/${animalId}/health/add` as any)}
       >
         <Plus size={28} color={Colors.white} />
       </TouchableOpacity>
@@ -188,6 +203,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: Spacing.xxl,
+    gap: Spacing.md,
   },
   loadingText: {
     fontSize: FontSize.md,
@@ -226,6 +242,11 @@ const styles = StyleSheet.create({
     fontSize: FontSize.sm,
     color: Colors.textMuted,
     textTransform: 'capitalize' as const,
+  },
+  animalInfo: {
+    fontSize: FontSize.sm,
+    color: Colors.primary,
+    fontWeight: FontWeight.medium,
   },
   eventMeta: {
     flexDirection: 'row',

@@ -1,106 +1,77 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { User, Animal, HealthEvent, Descendant } from '@/types/models';
+// 1. Remova os tipos não utilizados
+// import { User, Animal, HealthEvent, Descendant } from '@/types/models';
 
 const STORAGE_KEYS = {
-  USER: '@happyherd:user',
-  ANIMALS: '@happyherd:animals',
-  HEALTH_EVENTS: '@happyherd:health_events',
-  DESCENDANTS: '@happyherd:descendants',
+  USER_TOKEN: '@happyherd:user_token', 
+  USER_LOCALE: '@happyherd:locale',
+  // 2. Remova as chaves antigas
+  // ANIMALS: '@happyherd:animals',
+  // HEALTH_EVENTS: '@happyherd:health_events',
+  // DESCENDANTS: '@happyherd:descendants',
 } as const;
 
 export class StorageService {
-  static async getUser(): Promise<User | null> {
+  
+  // --- Funções de Token (Corretas) ---
+  static async getToken(): Promise<string | null> {
     try {
-      const data = await AsyncStorage.getItem(STORAGE_KEYS.USER);
-      return data ? JSON.parse(data) : null;
+      const data = await AsyncStorage.getItem(STORAGE_KEYS.USER_TOKEN);
+      return data ? data : null; 
     } catch (error) {
-      console.error('Error getting user:', error);
+      console.error('Error getting token:', error);
       return null;
     }
   }
 
-  static async setUser(user: User): Promise<void> {
+  static async setToken(token: string): Promise<void> {
     try {
-      await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+      await AsyncStorage.setItem(STORAGE_KEYS.USER_TOKEN, token);
     } catch (error) {
-      console.error('Error setting user:', error);
+      console.error('Error setting token:', error);
       throw error;
     }
   }
 
-  static async clearUser(): Promise<void> {
+  static async clearToken(): Promise<void> {
     try {
-      await AsyncStorage.removeItem(STORAGE_KEYS.USER);
+      await AsyncStorage.removeItem(STORAGE_KEYS.USER_TOKEN);
     } catch (error) {
-      console.error('Error clearing user:', error);
+      console.error('Error clearing token:', error);
       throw error;
     }
   }
 
-  static async getAnimals(): Promise<Animal[]> {
+  // --- Funções de Idioma (Corretas) ---
+  static async getLocale(): Promise<string | null> {
     try {
-      const data = await AsyncStorage.getItem(STORAGE_KEYS.ANIMALS);
-      return data ? JSON.parse(data) : [];
+      const data = await AsyncStorage.getItem(STORAGE_KEYS.USER_LOCALE);
+      return data ? data : null;
     } catch (error) {
-      console.error('Error getting animals:', error);
-      return [];
+      console.error('Error getting locale:', error);
+      return null;
     }
   }
 
-  static async setAnimals(animals: Animal[]): Promise<void> {
+  static async setLocale(locale: string): Promise<void> {
     try {
-      await AsyncStorage.setItem(STORAGE_KEYS.ANIMALS, JSON.stringify(animals));
+      await AsyncStorage.setItem(STORAGE_KEYS.USER_LOCALE, locale);
     } catch (error) {
-      console.error('Error setting animals:', error);
+      console.error('Error setting locale:', error);
       throw error;
     }
   }
 
-  static async getHealthEvents(): Promise<HealthEvent[]> {
-    try {
-      const data = await AsyncStorage.getItem(STORAGE_KEYS.HEALTH_EVENTS);
-      return data ? JSON.parse(data) : [];
-    } catch (error) {
-      console.error('Error getting health events:', error);
-      return [];
-    }
-  }
+  // 3. REMOVA TODAS AS OUTRAS FUNÇÕES
+  // (getAnimals, setAnimals, getHealthEvents, setHealthEvents, etc.)
 
-  static async setHealthEvents(events: HealthEvent[]): Promise<void> {
-    try {
-      await AsyncStorage.setItem(STORAGE_KEYS.HEALTH_EVENTS, JSON.stringify(events));
-    } catch (error) {
-      console.error('Error setting health events:', error);
-      throw error;
-    }
-  }
-
-  static async getDescendants(): Promise<Descendant[]> {
-    try {
-      const data = await AsyncStorage.getItem(STORAGE_KEYS.DESCENDANTS);
-      return data ? JSON.parse(data) : [];
-    } catch (error) {
-      console.error('Error getting descendants:', error);
-      return [];
-    }
-  }
-
-  static async setDescendants(descendants: Descendant[]): Promise<void> {
-    try {
-      await AsyncStorage.setItem(STORAGE_KEYS.DESCENDANTS, JSON.stringify(descendants));
-    } catch (error) {
-      console.error('Error setting descendants:', error);
-      throw error;
-    }
-  }
-
+  // 4. ATUALIZE O clearAllData
   static async clearAllData(): Promise<void> {
     try {
+      // Limpa apenas o token e o idioma
       await AsyncStorage.multiRemove([
-        STORAGE_KEYS.USER,
-        STORAGE_KEYS.ANIMALS,
-        STORAGE_KEYS.HEALTH_EVENTS,
-        STORAGE_KEYS.DESCENDANTS,
+        STORAGE_KEYS.USER_TOKEN,
+        STORAGE_KEYS.USER_LOCALE,
       ]);
     } catch (error) {
       console.error('Error clearing all data:', error);

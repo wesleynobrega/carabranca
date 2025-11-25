@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Image } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Search, Plus, Filter } from 'lucide-react-native';
-import { Colors, Spacing, FontSize, FontWeight, BorderRadius } from '@/constants/colors';
-import { useHerd, useFilteredAnimals } from '@/contexts/HerdContext';
+// 1. CORREÇÃO: Adicionado 'useMemo' à importação do React
+import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
+import { useFilteredAnimals, useHerd } from '@/contexts/HerdContext';
 import { Animal, AnimalFilter } from '@/types/models';
+import { useRouter } from 'expo-router';
+import { Plus, Search } from 'lucide-react-native';
+import React, { useMemo, useState } from 'react';
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { t } from '@/lib/i18n';
 
-const FILTERS: { label: string; value: AnimalFilter }[] = [
-  { label: 'Todos', value: 'all' },
-  { label: 'Adultos', value: 'cow' },
-  { label: 'Filhos', value: 'calf' },
-  { label: 'À Venda', value: 'for_sale' },
+// Filtros agora usam 't()'
+const FILTERS: { labelKey: string; value: AnimalFilter }[] = [
+  { labelKey: 'animal.filter.all', value: 'all' },
+  { labelKey: 'animal.filter.adults', value: 'cow' },
+  { labelKey: 'animal.filter.calves', value: 'calf' },
+  { labelKey: 'animal.filter.forSale', value: 'for_sale' },
 ];
 
 export default function HerdScreen() {
   const router = useRouter();
-  const { filter, setFilter, searchQuery, setSearchQuery } = useHerd();
+  const { filter, setFilter, searchQuery, setSearchQuery, isLoading } = useHerd();
   const filteredAnimals = useFilteredAnimals();
   const [showSearch, setShowSearch] = useState(false);
 
@@ -25,7 +27,7 @@ export default function HerdScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerTop}>
-          <Text style={styles.title}>My Herd</Text>
+          <Text style={styles.title}>{t('tabs.herd')}</Text>
           <View style={styles.headerActions}>
             <TouchableOpacity
               onPress={() => setShowSearch(!showSearch)}
@@ -34,7 +36,7 @@ export default function HerdScreen() {
               <Search size={24} color={Colors.white} />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => router.push('/animal/add' as any)}
+              onPress={() => router.push('/animal/add')}
               style={styles.iconButton}
             >
               <Plus size={24} color={Colors.white} />
@@ -47,7 +49,7 @@ export default function HerdScreen() {
             <Search size={20} color={Colors.textMuted} />
             <TextInput
               style={styles.searchInput}
-              placeholder="Buscar por ID ou nome..."
+              placeholder={t('common.searchByIdOrName')}
               value={searchQuery}
               onChangeText={setSearchQuery}
               placeholderTextColor={Colors.textMuted}
@@ -63,27 +65,33 @@ export default function HerdScreen() {
               onPress={() => setFilter(f.value)}
             >
               <Text style={[styles.filterText, filter === f.value && styles.filterTextActive]}>
-                {f.label}
+                {t(f.labelKey)}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
       </View>
 
-      {filteredAnimals.length === 0 ? (
+      {/* Mostra o loading principal se os animais ainda não carregaram */}
+      {isLoading ? (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyTitle}>{t('animal.empty.title')}</Text>
+          <ActivityIndicator size="large" color={Colors.primary} />
+          <Text style={styles.emptyTitle}>{t('common.loading')}</Text>
+        </View>
+      ) : filteredAnimals.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyTitle}>{t('animal.empty.herdTitle')}</Text>
           <Text style={styles.emptyText}>
             {searchQuery || filter !== 'all'
-              ? 'Tente ajustar sua busca ou filtros'
-              : 'Adicione seu primeiro animal para começar'}
+              ? t('animal.empty.noResults')
+              : t('animal.empty.herdSubtitle')}
           </Text>
         </View>
       ) : (
         <FlatList
           data={filteredAnimals}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <AnimalCard animal={item} onPress={() => router.push(`/animal/${item.id}` as any)} />}
+          renderItem={({ item }) => <AnimalCard animal={item} onPress={() => router.push(`/animal/${item.id}`)} />}
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
         />
@@ -98,9 +106,42 @@ interface AnimalCardProps {
 }
 
 function AnimalCard({ animal, onPress }: AnimalCardProps) {
-  const age = Math.floor(
-    (Date.now() - new Date(animal.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000)
-  );
+  const { locale } = useHerd();
+
+  // 2. 'useMemo' agora está definido
+  const ageString = useMemo(() => {
+    try {
+      const [year, month, day] = animal.dateOfBirth.split('-').map(Number);
+      const birthDate = new Date(year, month - 1, day);
+      const today = new Date();
+      
+      let years = today.getFullYear() - birthDate.getFullYear();
+      let months = today.getMonth() - birthDate.getMonth();
+      
+      if (months < 0 || (months === 0 && today.getDate() < birthDate.getDate())) {
+        years--;
+        months += 12;
+      }
+      
+      if (years > 1) {
+        return `${years} ${t('common.yearPlural')}`;
+      }
+      if (years === 1) {
+        return `1 ${t('common.yearSingular')}`;
+      }
+      if (months > 1) {
+        return `${months} ${t('common.monthPlural')}`;
+      }
+      // Adiciona o caso de 1 mês ou 0 meses
+      if (months === 1) {
+         return `1 ${t('common.monthSingular')}`;
+      }
+      return `< 1 ${t('common.monthSingular')}`; // Menos de 1 mês
+
+    } catch (e) {
+      return 'N/A';
+    }
+  }, [animal.dateOfBirth, locale]); // Depende do locale para recarregar as traduções
 
   const getStatusColor = (status: Animal['status']) => {
     switch (status) {
@@ -112,39 +153,48 @@ function AnimalCard({ animal, onPress }: AnimalCardProps) {
     }
   };
 
+  // Código defensivo
+  const tagId = animal.tagId || "";
+  const name = animal.name;
+  const imageUri = animal.imageUri;
+  const status = animal.status || "active";
+  const type = animal.type || "calf";
+  const gender = animal.gender || "F";
+
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
       <View style={styles.cardImage}>
-        {animal.imageUri ? (
-          <Image source={{ uri: animal.imageUri }} style={styles.image} />
+        {imageUri ? (
+          <Image source={{ uri: imageUri }} style={styles.image} />
         ) : (
           <View style={[styles.imagePlaceholder, { backgroundColor: Colors.primaryLight + '20' }]}>
-            <Text style={styles.imagePlaceholderText}>{animal.tagId.substring(0, 2)}</Text>
+            <Text style={styles.imagePlaceholderText}>{tagId.substring(0, 2)}</Text>
           </View>
         )}
       </View>
       <View style={styles.cardContent}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardId}>#{animal.tagId}</Text>
-          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(animal.status) + '20' }]}>
-            <Text style={[styles.statusText, { color: getStatusColor(animal.status) }]}>
-              {animal.status.replace('_', ' ')}
+          <Text style={styles.cardId}>#{tagId}</Text>
+          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(status) + '20' }]}>
+            <Text style={[styles.statusText, { color: getStatusColor(status) }]}>
+              {t(`animal.status.${status}`)}
             </Text>
           </View>
         </View>
-        {animal.name && <Text style={styles.cardName}>{animal.name}</Text>}
+        {name && <Text style={styles.cardName}>{name}</Text>}
         <View style={styles.cardDetails}>
-          <Text style={styles.cardDetailText}>{animal.type}</Text>
+          <Text style={styles.cardDetailText}>{t(`animal.type.${type}`)}</Text>
           <Text style={styles.cardDetailText}>•</Text>
-          <Text style={styles.cardDetailText}>{age} years</Text>
+          <Text style={styles.cardDetailText}>{ageString}</Text>
           <Text style={styles.cardDetailText}>•</Text>
-          <Text style={styles.cardDetailText}>{animal.gender === 'M' ? 'Macho' : 'Fêmea'}</Text>
+          <Text style={styles.cardDetailText}>{gender === 'M' ? t('common.male') : t('common.female')}</Text>
         </View>
       </View>
     </TouchableOpacity>
   );
 }
 
+// ... (Estilos - sem alterações) ...
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -153,6 +203,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: Colors.primary,
     paddingBottom: Spacing.md,
+    paddingTop: Spacing.lg,
   },
   headerTop: {
     flexDirection: 'row',

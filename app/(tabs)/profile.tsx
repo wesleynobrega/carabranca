@@ -1,32 +1,49 @@
+// app/(tabs)/profile.tsx (CORRIGIDO)
+
 import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
 import { useHerd } from '@/contexts/HerdContext';
+// 1. Remover useRouter se não for mais usado para outras coisas
 import { useRouter } from 'expo-router';
 import { Info, LogOut, Mail, User } from 'lucide-react-native';
 import React from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+// 2. Importar 'Platform' para o alerta
+import { Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { t } from '@/lib/i18n';
 
 export default function ProfileScreen() {
-  const router = useRouter();
+  const router = useRouter(); // Necessário para os outros botões
   const { user, logout, animals } = useHerd();
 
   const handleLogout = () => {
-    Alert.alert(
-      t('profile.logoutTitle'),
-      t('profile.logoutMessage'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('common.logout'), 
-          style: 'destructive',
-          onPress: async () => {
-            await logout();
-            router.replace('/');
+    const title = t('profile.logoutTitle');
+    const message = t('profile.logoutMessage');
+
+    const doLogout = async () => {
+      await logout();
+      // 3. LINHA REMOVIDA:
+      // router.replace('/'); 
+      // O (tabs)/_layout.tsx agora trata disso.
+    };
+
+    if (Platform.OS === 'web') {
+      if (window.confirm(message)) {
+        doLogout();
+      }
+    } else {
+      Alert.alert(
+        title,
+        message,
+        [
+          { text: t('common.cancel'), style: 'cancel' },
+          {
+            text: t('common.logout'), 
+            style: 'destructive',
+            onPress: doLogout,
           },
-        },
-      ]
-    );
+        ]
+      );
+    }
   };
 
   return (
@@ -35,58 +52,69 @@ export default function ProfileScreen() {
         <View style={styles.avatar}>
           <User size={48} color={Colors.white} />
         </View>
-        <Text style={styles.name}>{user?.fullName || 'Usuário'}</Text> {/* Traduzido */}
-        <Text style={styles.email}>{user?.email || 'email@exemplo.com'}</Text> {/* Traduzido */}
+        <Text style={styles.name}>{user?.fullName || t('common.user')}</Text>
+        <Text style={styles.email}>{user?.email || t('common.emailExample')}</Text>
       </View>
 
       <View style={styles.stats}>
         <View style={styles.statItem}>
           <Text style={styles.statValue}>{animals.length}</Text>
-          <Text style={styles.statLabel}>Total de Animais</Text> {/* Traduzido */}
+          <Text style={styles.statLabel}>{t('dashboard.stats.totalAnimals')}</Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
           <Text style={styles.statValue}>{animals.filter(a => a.status === 'active').length}</Text>
-          <Text style={styles.statLabel}>Ativos</Text> {/* Traduzido */}
+          <Text style={styles.statLabel}>{t('animal.status.active')}</Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
           <Text style={styles.statValue}>{animals.filter(a => a.status === 'for_sale').length}</Text>
-          <Text style={styles.statLabel}>À Venda</Text> {/* Traduzido */}
+          <Text style={styles.statLabel}>{t('dashboard.stats.forSale')}</Text>
         </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Conta</Text> {/* Traduzido */}
+        <Text style={styles.sectionTitle}>{t('profile.account')}</Text>
         <MenuButton
           icon={<User size={20} color={Colors.text} />}
-          title="Informações do Perfil" // Traduzido
-          onPress={() => Alert.alert('Em Breve', 'Funcionalidade de edição de perfil')} // Traduzido
+          title={t('profile.info')}
+          onPress={() => router.push('/profile-info')} // Corrigido para a tela correta
         />
         <MenuButton
           icon={<Mail size={20} color={Colors.text} />}
-          title="Configurações de E-mail" // Traduzido
-          onPress={() => Alert.alert('Em Breve', 'Funcionalidade de configurações de e-mail')} // Traduzido
+          title={t('profile.emailSettings')}
+          onPress={() => router.push('/profile-info')} // Corrigido para a tela correta
+        />
+      </View>
+
+      {/* Seção de Idioma (como implementamos) */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t('profile.preferences')}</Text>
+        <MenuButton
+          icon={<User size={20} color={Colors.text} />} // Você pode querer usar o ícone 'Languages'
+          title={t('profile.changeLanguage')}
+          onPress={() => router.push('/language-picker')} // Corrigido para a tela correta
         />
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Sobre</Text> {/* Traduzido */}
+        <Text style={styles.sectionTitle}>{t('profile.about')}</Text>
         <MenuButton
           icon={<Info size={20} color={Colors.text} />}
-          title="Sobre o Happy Herd" // Traduzido
-          onPress={() => Alert.alert('Happy Herd', 'Versão 1.0.0\n\nPlataforma de Gestão Inteligente de Rebanho')} // Traduzido
+          title={t('profile.aboutApp')}
+          onPress={() => router.push('/about')} // Corrigido para a tela correta
         />
       </View>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <LogOut size={20} color={Colors.error} />
-        <Text style={styles.logoutText}>Sair</Text> {/* Traduzido */}
+        <Text style={styles.logoutText}>{t('common.logout')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
 
+// ... (Componente MenuButton e Estilos permanecem os mesmos) ...
 interface MenuButtonProps {
   icon: React.ReactNode;
   title: string;

@@ -1,38 +1,27 @@
-import React, { useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import { Leaf } from 'lucide-react-native';
 import { Button } from '@/components/Button';
-import { Colors, Spacing, FontSize, FontWeight, BorderRadius } from '@/constants/colors';
-import { useHerd } from '@/contexts/HerdContext';
+import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
+import { Link } from 'expo-router';
+import { Leaf } from 'lucide-react-native';
+import React from 'react';
+import { Dimensions, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { t } from '@/lib/i18n';
 
 const { width } = Dimensions.get('window');
 
 export default function WelcomeScreen() {
-  const router = useRouter();
-  const { user } = useHerd();
   const insets = useSafeAreaInsets();
 
-  const handleRedirect = useCallback(() => {
-    if (user) {
-      router.replace('/(tabs)');
-    }
-  }, [user, router]);
-
-  useEffect(() => {
-    handleRedirect();
-  }, [handleRedirect]);
+  // Toda a lógica de redirecionamento (useHerd, useRouter, useEffect) foi removida.
 
   return (
     <View style={styles.container}>
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={[
           styles.content,
-          { paddingTop: insets.top + Spacing.xl, paddingBottom: insets.bottom + Spacing.lg }
+          { paddingTop: insets.top + Spacing.xl, paddingBottom: insets.bottom + Spacing.lg },
         ]}
         showsVerticalScrollIndicator={false}
       >
@@ -42,7 +31,6 @@ export default function WelcomeScreen() {
           </View>
           
           <Text style={styles.title}>Happy Herd</Text>
-          {/* 2. Textos traduzidos */}
           <Text style={styles.subtitle}>{t('welcome.subtitle')}</Text>
           
           <View style={styles.imageContainer}>
@@ -68,11 +56,20 @@ export default function WelcomeScreen() {
         </View>
 
         <View style={styles.buttonContainer}>
-          <Button
-            title={t('welcome.getStarted')}
-            onPress={() => router.push('/register' as any)}
-            size="large"
-          />
+          <Link href="/login" asChild style={styles.buttonLink}>
+            <Button
+              title={t('welcome.login')}
+              variant="outline"
+              size="large"
+            />
+          </Link>
+          <Link href="/register" asChild style={styles.buttonLink}>
+            <Button
+              title={t('welcome.createAccount')}
+              variant="primary"
+              size="large"
+            />
+          </Link>
         </View>
       </ScrollView>
     </View>
@@ -165,5 +162,10 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     paddingVertical: Spacing.lg,
+    flexDirection: 'row',
+    gap: Spacing.md,
+  },
+  buttonLink: {
+    flex: 1,
   },
 });

@@ -1,56 +1,68 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
-import { ArrowLeft, Calendar, Clock } from 'lucide-react-native';
-import { Colors, Spacing, FontSize, FontWeight, BorderRadius } from '@/constants/colors';
-import { useHerd } from '@/contexts/HerdContext';
-import { Button } from '@/components/Button';
-import { HealthEvent } from '@/types/models';
+// app/animal/[id]/health/add.tsx (COMPLETO E CORRIGIDO)
 
-// 1. Importar a função 't'
+import { Button } from '@/components/Button';
+import { DatePickerInput } from '@/components/DatePickerInput';
+import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
+import { useHerd } from '@/contexts/HerdContext'; // 1. Pegar o locale
 import { t } from '@/lib/i18n';
+import { trpc } from '@/lib/trpc';
+import { HealthEvent } from '@/types/models';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { ArrowLeft, Clock } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+// Converte um objeto Date para o formato 'AAAA-MM-DD'
+const dateToISO = (date: Date): string => {
+  return date.toISOString().split('T')[0];
+};
 
 export default function AddHealthEventScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id: animalId } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { addHealthEvent, getAnimalById } = useHerd();
+  const { getAnimalById } = useHerd();
+  const trpcUtils = trpc.useContext();
+
+  const animal = getAnimalById(animalId!);
   
-  const animal = getAnimalById(id!);
+  const createHealthMutation = trpc.health.create.useMutation();
+
   const [eventType, setEventType] = useState<HealthEvent['eventType']>('checkup');
   const [eventName, setEventName] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState(new Date());
   const [time, setTime] = useState('');
   const [description, setDescription] = useState('');
   const [veterinarian, setVeterinarian] = useState('');
   const [cost, setCost] = useState('');
 
   const handleSave = async () => {
-    // 2. Usar 't' para o alerta de erro
     if (!eventName.trim()) {
-      // Usar 'Alert' em vez de 'alert' para um visual nativo
       Alert.alert(t('common.error'), t('health.detail.errors.nameRequired'));
       return;
     }
 
     try {
-      await addHealthEvent({
-        animalId: id!,
+      await createHealthMutation.mutateAsync({
+        animalId: animalId!,
         eventType,
         eventName: eventName.trim(),
-        date,
+        date: dateToISO(date),
         time: time.trim() || undefined,
         description: description.trim() || undefined,
         veterinarian: veterinarian.trim() || undefined,
         cost: cost ? parseFloat(cost) : undefined,
       });
+
+      await trpcUtils.health.list.invalidate({ animalId: animalId! });
+      await trpcUtils.health.listAll.invalidate();
+      
       router.back();
     } catch (error) {
       console.error('Error adding health event:', error);
-      Alert.alert(t('common.error'), t('health.form.alert.addFailed'));
+      Alert.alert(t('common.error'), t('health.add.alert.addFailed'));
     }
   };
 
-  // Esta estrutura não precisa de tradução
   const eventTypes: { value: HealthEvent['eventType'] }[] = [
     { value: 'vaccination' },
     { value: 'treatment' },
@@ -64,7 +76,6 @@ export default function AddHealthEventScreen() {
       <View style={styles.container}>
         <Stack.Screen options={{ headerShown: false }} />
         <View style={styles.emptyState}>
-          {/* 3. Usar 't' para o estado de erro */}
           <Text style={styles.emptyText}>{t('animal.notFound')}</Text>
           <Button title={t('common.goBack')} onPress={() => router.back()} />
         </View>
@@ -81,7 +92,6 @@ export default function AddHealthEventScreen() {
           <ArrowLeft size={24} color={Colors.white} />
         </TouchableOpacity>
         <View style={styles.headerContent}>
-          {/* 4. Usar 't' para o título (já definido no app/_layout.tsx) */}
           <Text style={styles.headerTitle}>{t('health.addEventTitle')}</Text>
           <Text style={styles.headerSubtitle}>#{animal.tagId}</Text>
         </View>
@@ -89,9 +99,8 @@ export default function AddHealthEventScreen() {
 
       <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
         <View style={styles.section}>
-          {/* 5. Usar as chaves 't' do formulário (a maioria já existe) */}
           <View style={styles.field}>
-            <Text style={styles.label}>{t('health.form.typeLabel')} *</Text>
+            <Text style={styles.label}>{t('health.add.eventTypeLabel')} *</Text>
             <View style={styles.chipContainer}>
               {eventTypes.map((type) => (
                 <TouchableOpacity
@@ -108,32 +117,23 @@ export default function AddHealthEventScreen() {
           </View>
 
           <View style={styles.field}>
-            <Text style={styles.label}>{t('health.form.nameLabel')} *</Text>
+            <Text style={styles.label}>{t('health.add.eventNameLabel')} *</Text>
             <TextInput
               style={styles.input}
               value={eventName}
               onChangeText={setEventName}
-              placeholder={t('health.form.namePlaceholderAdd')}
+              placeholder={t('health.add.eventNamePlaceholder')}
               placeholderTextColor={Colors.textMuted}
             />
           </View>
 
           <View style={styles.row}>
             <View style={[styles.field, styles.fieldHalf]}>
-              <Text style={styles.label}>{t('health.form.dateLabel')} *</Text>
-              <View style={styles.dateInputContainer}>
-                <Calendar size={20} color={Colors.textMuted} />
-                <TextInput
-                  style={styles.dateInput}
-                  value={date}
-                  onChangeText={setDate}
-                  placeholder={t('health.form.datePlaceholder')}
-                  placeholderTextColor={Colors.textMuted}
-                />
-              </View>
+              <Text style={styles.label}>{t('health.add.dateLabel')} *</Text>
+              <DatePickerInput value={date} onChange={setDate} />
             </View>
             <View style={[styles.field, styles.fieldHalf]}>
-              <Text style={styles.label}>{t('health.form.timeLabel')}</Text>
+              <Text style={styles.label}>{t('health.add.timeLabel')}</Text>
               <View style={styles.dateInputContainer}>
                 <Clock size={20} color={Colors.textMuted} />
                 <TextInput
@@ -148,35 +148,35 @@ export default function AddHealthEventScreen() {
           </View>
 
           <View style={styles.field}>
-            <Text style={styles.label}>{t('health.form.vetLabel')}</Text>
+            <Text style={styles.label}>{t('health.add.veterinarianLabel')}</Text>
             <TextInput
               style={styles.input}
               value={veterinarian}
               onChangeText={setVeterinarian}
-              placeholder={t('health.form.vetPlaceholder')}
+              placeholder={t('health.add.veterinarianPlaceholder')}
               placeholderTextColor={Colors.textMuted}
             />
           </View>
 
           <View style={styles.field}>
-            <Text style={styles.label}>{t('health.form.costLabel')}</Text>
+            <Text style={styles.label}>{t('health.add.costLabel')}</Text>
             <TextInput
               style={styles.input}
               value={cost}
               onChangeText={setCost}
-              placeholder={t('health.form.costPlaceholder')}
+              placeholder={t('health.add.costPlaceholder')}
               keyboardType="numeric"
               placeholderTextColor={Colors.textMuted}
             />
           </View>
 
           <View style={styles.field}>
-            <Text style={styles.label}>{t('common.notes')}</Text>
+            <Text style={styles.label}>{t('health.add.descriptionLabel')}</Text>
             <TextInput
               style={[styles.input, styles.textArea]}
               value={description}
               onChangeText={setDescription}
-              placeholder={t('common.notesPlaceholderObservations')}
+              placeholder={t('health.add.descriptionPlaceholder')}
               multiline
               numberOfLines={4}
               textAlignVertical="top"
@@ -187,7 +187,11 @@ export default function AddHealthEventScreen() {
       </ScrollView>
 
       <View style={styles.footer}>
-        <Button title={t('health.form.saveButton')} onPress={handleSave} />
+        <Button 
+          title={t('health.add.saveButton')} 
+          onPress={handleSave} 
+          loading={createHealthMutation.isPending}
+        />
       </View>
     </View>
   );

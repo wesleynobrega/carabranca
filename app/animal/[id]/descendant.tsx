@@ -1,28 +1,70 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
-import { ArrowLeft, Plus, ChevronRight } from 'lucide-react-native';
-import { Colors, Spacing, FontSize, FontWeight, BorderRadius } from '@/constants/colors';
-import { useHerd } from '@/contexts/HerdContext';
-import { Animal } from '@/types/models';
+// app/animal/[id]/descendant.tsx (COMPLETO E CORRIGIDO)
 
-// 1. Importar i18n e t
+import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
+import { useHerd } from '@/contexts/HerdContext';
 import i18n, { t } from '@/lib/i18n';
+import { trpc } from '@/lib/trpc';
+import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { ArrowLeft, ChevronRight, Plus } from 'lucide-react-native';
+import React, { useCallback } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+// Helper para formatar datas no formato AAAA-MM-DD ou ISO
+function formatLocalDate(isoOrDate?: string, locale?: string) {
+  if (!isoOrDate) return 'N/A';
+  try {
+    const loc = locale || (typeof (Intl) !== 'undefined' ? undefined : undefined);
+    // Caso seja no formato YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(isoOrDate)) {
+      const [year, month, day] = isoOrDate.split('-').map(Number);
+      const d = new Date(year, month - 1, day);
+      if (isNaN(d.getTime())) return 'N/A';
+      return d.toLocaleDateString(locale || undefined, { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+    // Tenta criar a Date normalmente (para ISO com time, etc.)
+    const parsed = new Date(isoOrDate);
+    if (isNaN(parsed.getTime())) return 'N/A';
+    return parsed.toLocaleDateString(locale || undefined, { day: '2-digit', month: '2-digit', year: 'numeric' });
+  } catch {
+    return 'N/A';
+  }
+}
 
 export default function DescendantsListScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id: parentId } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { animals, getAnimalById } = useHerd();
+  const { getAnimalById } = useHerd();
   
-  const parent = getAnimalById(id!);
-  const children = animals.filter(a => a.motherId === id || a.fatherId === id);
+  const parent = getAnimalById(parentId!);
+
+  const { 
+    data: children = [], 
+    isLoading, 
+    refetch 
+  } = trpc.descendant.list.useQuery(
+    { parentId: parentId! },
+    { enabled: !!parentId }
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
+
+  if (isLoading && !parent) {
+    return (
+      <View style={[styles.container, styles.emptyState]}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  }
 
   if (!parent) {
     return (
       <View style={styles.container}>
         <Stack.Screen options={{ headerShown: false }} />
         <View style={styles.emptyState}>
-          {/* 2. Usar 't' para erro */}
           <Text style={styles.emptyText}>{t('animal.notFound')}</Text>
         </View>
       </View>
@@ -38,14 +80,15 @@ export default function DescendantsListScreen() {
           <ArrowLeft size={24} color={Colors.white} />
         </TouchableOpacity>
         <View style={styles.headerContent}>
-          {/* 3. Usar 't' para o header */}
           <Text style={styles.headerTitle}>{t('animal.descendantsTitle')}</Text>
           <Text style={styles.headerSubtitle}>#{parent.tagId} {parent.name ? `- ${parent.name}` : ''}</Text>
         </View>
       </View>
 
       <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
-        {children.length > 0 ? (
+        {isLoading ? (
+          <ActivityIndicator size="large" color={Colors.primary} />
+        ) : children.length > 0 ? (
           <View style={styles.descendantsList}>
             {children.map((child) => (
               <TouchableOpacity
@@ -60,11 +103,9 @@ export default function DescendantsListScreen() {
                   </View>
                   <View style={styles.descendantDetails}>
                     <View style={styles.detailItem}>
-                      {/* 4. Usar 't' para os detalhes */}
                       <Text style={styles.detailLabel}>{t('animal.dob')}:</Text>
                       <Text style={styles.detailValue}>
-                        {/* 5. Usar o locale do i18n */}
-                        {new Date(child.dateOfBirth).toLocaleDateString(i18n.currentLocale())}
+                        {formatLocalDate(child.dateOfBirth, i18n.currentLocale())}
                       </Text>
                     </View>
                     <View style={styles.detailItem}>
@@ -74,8 +115,8 @@ export default function DescendantsListScreen() {
                       </Text>
                     </View>
                     <View style={styles.detailItem}>
-                      <Text style={styles.detailLabel}>{t('animal.type')}:</Text>
-                      <Text style={styles.detailValue}>{child.type}</Text>
+                      <Text style={styles.detailLabel}>{t('animal.form.typeLabel')}:</Text>
+                      <Text style={styles.detailValue}>{t(`animal.type.${child.type}` as any)}</Text>
                     </View>
                   </View>
                 </View>
@@ -85,7 +126,6 @@ export default function DescendantsListScreen() {
           </View>
         ) : (
           <View style={styles.emptyListState}>
-            {/* 6. Usar 't' para o estado de lista vazia */}
             <Text style={styles.emptyListText}>{t('animal.empty.descendantsTitle')}</Text>
             <Text style={styles.emptyListSubtext}>
               {t('animal.empty.descendantsSubtitle')}
@@ -96,7 +136,7 @@ export default function DescendantsListScreen() {
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => router.push(`/animal/${id}/add-descendant` as any)}
+        onPress={() => router.push(`/animal/${parentId}/add-descendant` as any)}
       >
         <Plus size={28} color={Colors.white} />
       </TouchableOpacity>

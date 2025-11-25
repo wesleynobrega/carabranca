@@ -1,5 +1,12 @@
 {
   "common": {
+    "goBack": "Go Back",
+    "all": "All",
+    "years": "years",
+    "yearSingular": "year",
+    "yearPlural": "years",
+    "monthPlural": "months",
+    "monthSingular": "month",
     "cancel": "Cancel",
     "logout": "Logout",
     "comingSoon": "Coming Soon",
@@ -20,11 +27,15 @@
     "notesPlaceholderObservations": "Add any additional notes or observations...",
     "male": "Male",
     "female": "Female",
-    "searchByIdOrName": "Search by ID or name..."
+    "searchByIdOrName": "Search by ID or name...",
+    "owner": "Owner"
   },
   "animal": {
+    "dobRequired": "Date of birth is required",
+    "dobInvalid": "Please enter a valid date in {{format}} format",
     "profileTitle": "Animal Profile",
     "addTitle": "Add Animal",
+    "editTitle": "Edit Animal",
     "notFound": "Animal not found",
     "addDescendantTitle": "Add Descendant",
     "parentAnimal": "Parent Animal",
@@ -37,15 +48,76 @@
     "parentNotFound": "Parent animal not found",
     "alert": {
       "selectDescendant": "Please select a descendant",
-      "addDescendantFailed": "Failed to add descendant"
+      "addDescendantFailed": "Failed to add descendant",
+      "deleteTitle": "Delete Animal",
+      "deleteMessage": "Are you sure you want to delete this animal? All associated health and descendant records will be lost.",
+      "deleteFailed": "Failed to delete animal."
     },
     "descendantsTitle": "Descendants",
     "dob": "DOB",
     "gender": "Gender",
     "type": "Type",
+    "details": {
+      "title": "Animal Details"
+    },
+    "navigation": {
+      "title": "Manage"
+    },
     "empty": {
+      "noResults": "Try adjusting your search or filters.",
       "descendantsTitle": "No descendants recorded",
-      "descendantsSubtitle": "Tap the + button below to add a descendant"
+      "descendantsSubtitle": "Tap the + button below to add a descendant",
+      "herdTitle": "Your herd is empty",
+      "herdSubtitle": "Get started by adding your first animal."
+    },
+    "filter": {
+      "all": "All",
+      "adults": "Adults",
+      "calves": "Calves",
+      "forSale": "For Sale"
+    },
+    "status": {
+      "active": "Active",
+      "for_sale": "For Sale",
+      "sold": "Sold",
+      "deceased": "Deceased"
+    },
+    "type": {
+      "cow": "Cow",
+      "calf": "Calf",
+      "bull": "Bull",
+      "heifer": "Heifer",
+      "steer": "Steer"
+    },
+    "form": {
+      "errors": {
+        "tagIdRequired": "Tag ID is required.",
+        "dobRequired": "Date of birth is required.",
+        "cameraPermission": "Camera permission is required to take photos.",
+        "galleryPermission": "Gallery permission is required to select photos."
+      },
+      "alert": {
+        "updateSuccess": "Animal updated successfully!",
+        "updateFailed": "Failed to update animal. Please try again.",
+        "addSuccess": "Animal added successfully!",
+        "addFailed": "Failed to add animal. Please try again."
+      },
+      "editTitle": "Edit Animal",
+      "tagIdLabel": "Tag ID *",
+      "tagIdPlaceholder": "e.g., 123A",
+      "nameLabel": "Name (Optional)",
+      "namePlaceholder": "e.g., Bessie",
+      "dobLabel": "Date of Birth *",
+      "typeLabel": "Type *",
+      "genderLabel": "Gender *",
+      "statusLabel": "Status *",
+      "breedLabel": "Breed (Optional)",
+      "breedPlaceholder": "e.g., Angus",
+      "colorLabel": "Color (Optional)",
+      "colorPlaceholder": "e.g., Black",
+      "weightLabel": "Weight (Optional)",
+      "saveButton": "Save Animal",
+      "editButton": "Edit Animal"
     }
   },
   "register": {
@@ -123,20 +195,86 @@
       "alert": {
         "addFailed": "Failed to add health event"
       }
+    },
+    "add": {
+      "eventTypeLabel": "Event Type",
+      "eventNameLabel": "Event Name",
+      "eventNamePlaceholder": "e.g., Annual vaccination, Routine checkup",
+      "dateLabel": "Date",
+      "timeLabel": "Time",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Add a description of the event...",
+      "veterinarianLabel": "Veterinarian",
+      "veterinarianPlaceholder": "Veterinarian name",
+      "costLabel": "Cost",
+      "costPlaceholder": "0.00",
+      "saveButton": "Save Health Event",
+      "alert": {
+        "addFailed": "Failed to add health event"
+      }
     }
   },
   "welcome": {
-    "subtitle": "Smart Livestock Management",
-    "description": "Manage your cattle, track health records, monitor breeding, and keep your herd thriving with our comprehensive livestock management platform.",
+    "subtitle": "Intelligent Herd Management",
+    "description": "Manage your cattle, track health records, monitor breeding, and keep your herd thriving with our complete management platform.",
     "feature1": "Track individual animal health & history",
     "feature2": "Monitor breeding & descendants",
     "feature3": "Manage multiple herds effortlessly",
     "feature4": "Offline-first, always accessible",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "login": "Login",
+    "createAccount": "Create Account"
+  },
+  "login": {
+    "title": "Welcome Back",
+    "subtitle": "Sign in to your account to manage your herd.",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "forgotPassword": "Forgot password?",
+    "submitButton": "Sign In",
+    "error": {
+      "required": "Please fill in all fields.",
+      "invalid": "Incorrect email or password."
+    },
+    "noAccount": "Don't have an account?",
+    "registerLink": "Sign Up"
   },
   "tabs": {
     "dashboard": "Dashboard",
     "herd": "My Herd",
     "profile": "Profile"
+  },
+  "dashboard": {
+    "welcomeBack": "Welcome back,",
+    "stats": {
+      "totalAnimals": "Total Animals",
+      "adults": "Adults",
+      "calves": "Calves",
+      "forSale": "For Sale"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "viewHerd": "View My Herd",
+      "healthEvents": "View Health Events"
+    }
+  },
+  "profile": {
+    "logoutTitle": "Confirm Logout",
+    "logoutMessage": "Are you sure you want to log out?",
+    "account": "Account",
+    "info": "Profile Information",
+    "emailSettings": "Email Settings",
+    "about": "About",
+    "aboutApp": "About Happy Herd",
+    "aboutAppMessage": "Version 1.0.0 - Smart Livestock Management",
+    "comingSoon": {
+      "editProfile": "Profile editing functionality",
+      "emailSettings": "Email settings functionality"
+    },
+    "preferences": "Preferences",
+    "changeLanguage": "Change Language",
+    "comingSoon.language": "Language selection will be implemented soon.",
+    "changePasswordPlaceholder": "Leave blank to keep current password",
+    "updatePassword": "Update Password"
   }
 }

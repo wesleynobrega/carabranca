@@ -29,10 +29,12 @@
       },
       "package": "app.rork.happy_herd_management_app",
       "permissions": [
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
-      ]
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "usesCleartextTraffic": true
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
@@ -54,6 +56,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": "https://rork.com/"
+      },
+      "eas": {
+        "projectId": "14582e94-25dc-4e0b-ac09-0b3f87f513ef"
+      }
     }
   }
 }

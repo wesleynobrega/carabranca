@@ -1,43 +1,58 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, FlatList, Alert } from 'react-native';
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
-import { ArrowLeft, Calendar, Search } from 'lucide-react-native';
-import { Colors, Spacing, FontSize, FontWeight, BorderRadius } from '@/constants/colors';
-import { useHerd } from '@/contexts/HerdContext';
-import { Button } from '@/components/Button';
-import { Animal } from '@/types/models';
+// app/animal/[id]/add-descendant.tsx (COMPLETO E CORRIGIDO)
 
-// 1. Importar a função 't'
+import { Button } from '@/components/Button';
+import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
+import { useHerd } from '@/contexts/HerdContext';
 import { t } from '@/lib/i18n';
+import { trpc } from '@/lib/trpc';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { ArrowLeft, Search } from 'lucide-react-native';
+import React, { useMemo, useState } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+type Relationship = 'mother' | 'father';
 
 export default function AddDescendantScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id: parentId } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { animals, addDescendant, getAnimalById } = useHerd();
+  const { animals, getAnimalById } = useHerd(); 
+  const trpcUtils = trpc.useContext();
   
-  const parent = getAnimalById(id!);
+  const parent = getAnimalById(parentId!);
   const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [relationship, setRelationship] = useState<'mother' | 'father'>('mother');
+  const [relationship, setRelationship] = useState<Relationship>('mother');
+  
+  const createDescendantMutation = trpc.descendant.create.useMutation();
 
-  const filteredAnimals = animals.filter(animal => {
-    if (animal.id === id) return false;
-    const matchesSearch = 
-      searchQuery === '' ||
-      animal.tagId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      animal.name?.toLowerCase().includes(searchQuery.toLowerCase()) || false;
-    return matchesSearch;
-  });
+  const filteredAnimals = useMemo(() => {
+    return animals.filter(animal => {
+      if (animal.id === parentId) return false; 
+      const query = searchQuery.toLowerCase();
+      if (!query) return true;
+      return (
+        animal.tagId.toLowerCase().includes(query) ||
+        animal.name?.toLowerCase().includes(query)
+      );
+    });
+  }, [animals, parentId, searchQuery]);
 
   const handleSave = async () => {
-    // 2. Usar 't' para alertas
     if (!selectedChildId) {
       Alert.alert(t('common.error'), t('animal.alert.selectDescendant'));
       return;
     }
 
     try {
-      await addDescendant(id!, selectedChildId, relationship);
+      await createDescendantMutation.mutateAsync({
+        parentId: parentId!,
+        childId: selectedChildId,
+        relationship,
+      });
+      
+      await trpcUtils.descendant.list.invalidate({ parentId: parentId! });
+      
+      Alert.alert(t('common.success'), t('animal.alert.addDescendantSuccess'));
       router.back();
     } catch (error) {
       console.error('Error adding descendant:', error);
@@ -50,7 +65,6 @@ export default function AddDescendantScreen() {
       <View style={styles.container}>
         <Stack.Screen options={{ headerShown: false }} />
         <View style={styles.emptyState}>
-          {/* 3. Usar 't' para erro */}
           <Text style={styles.emptyText}>{t('animal.parentNotFound')}</Text>
           <Button title={t('common.goBack')} onPress={() => router.back()} />
         </View>
@@ -66,7 +80,6 @@ export default function AddDescendantScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ArrowLeft size={24} color={Colors.white} />
         </TouchableOpacity>
-        {/* 4. Usar 't' para o header */}
         <Text style={styles.headerTitle}>{t('animal.addDescendantTitle')}</Text>
       </View>
 
@@ -128,10 +141,16 @@ export default function AddDescendantScreen() {
                   onPress={() => setSelectedChildId(animal.id)}
                 >
                   <View style={styles.animalInfo}>
-                    <Text style={styles.animalId}>#{animal.tagId}</Text>
-                    {animal.name && <Text style={styles.animalName}>{animal.name}</Text>}
-                    <Text style={styles.animalDetail}>
-                      {animal.type} • {animal.gender === 'M' ? t('common.male') : t('common.female')}
+                    <Text style={[styles.animalId, selectedChildId === animal.id && styles.animalTextSelected]}>
+                      #{animal.tagId}
+                    </Text>
+                    {animal.name && (
+                      <Text style={[styles.animalName, selectedChildId === animal.id && styles.animalTextSelectedMuted]}>
+                        {animal.name}
+                      </Text>
+                    )}
+                    <Text style={[styles.animalDetail, selectedChildId === animal.id && styles.animalTextSelectedMuted]}>
+                      {t(`animal.type.${animal.type}` as any)} • {animal.gender === 'M' ? t('common.male') : t('common.female')}
                     </Text>
                   </View>
                   {selectedChildId === animal.id && (
@@ -147,7 +166,12 @@ export default function AddDescendantScreen() {
       </ScrollView>
 
       <View style={styles.footer}>
-        <Button title={t('animal.saveDescendantButton')} onPress={handleSave} />
+        <Button 
+          title={t('animal.saveDescendantButton')} 
+          onPress={handleSave} 
+          loading={createDescendantMutation.isPending}
+          disabled={!selectedChildId || createDescendantMutation.isPending}
+        />
       </View>
     </View>
   );
@@ -284,6 +308,12 @@ const styles = StyleSheet.create({
   animalDetail: {
     fontSize: FontSize.sm,
     color: Colors.textMuted,
+  },
+  animalTextSelected: {
+    color: Colors.primary,
+  },
+  animalTextSelectedMuted: {
+    color: Colors.primaryLight,
   },
   selectedIndicator: {
     width: 24,
