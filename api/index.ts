@@ -1,6 +1,8 @@
-// api/index.ts
+// api/index.ts (Este arquivo é o wrapper para a Vercel)
 
-import app from '../backend/honop'
+// Importa o default export de honop.ts, que é a função app.fetch.
+// Renomeamos para 'honoHandler' para clareza.
+import honoHandler from '../backend/honop';
 
-// Exporta o handler serverless para a Vercel
-export default app.fetch
+// Exportamos o handler Serverless diretamente.
+export default honoHandler;
