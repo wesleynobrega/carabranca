@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { initTRPC, TRPCError } from "@trpc/server";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import superjson from "superjson";
-import { getSupabaseClient } from '../lib/supabase'; // ✅ Importa a função lazy
+import { getSupabaseClient } from '../lib/supabase.js'; // ✅ Importa a função lazy
 
 // 1. CORREÇÃO TS2339 (Propriedade 'data'): Define o tipo do User de forma segura
 type SupabaseClientInstance = ReturnType<typeof getSupabaseClient>;

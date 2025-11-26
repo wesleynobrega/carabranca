@@ -8,7 +8,8 @@
     "start-web": "bunx rork start -p 9xm5hh1oqp55gyrs3f86l --web --tunnel",
     "start-web-dev": "DEBUG=expo* bunx rork start -p 9xm5hh1oqp55gyrs3f86l --web --tunnel",
     "lint": "expo lint",
-    "dev": "bun --hot --env-file=.env run backend/honop.ts"
+    "dev": "bun --hot --env-file=.env run backend/honop.ts",
+     "build": "tsc"
   },
   "dependencies": {
     "@ai-sdk/react": "^2.0.76",

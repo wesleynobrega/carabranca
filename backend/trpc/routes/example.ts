@@ -1,7 +1,7 @@
 // backend/trpc/routes/example.ts (CORRIGIDO)
 import { z } from "zod";
 // AQUI ESTÁ A CORREÇÃO:
-import { createTRPCRouter, publicProcedure } from "../create-context";
+import { createTRPCRouter, publicProcedure } from "../create-context.js";
 
 export const exampleRouter = createTRPCRouter({
   hi: publicProcedure

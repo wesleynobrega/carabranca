@@ -1,8 +1,8 @@
 // backend/trpc/routes/descendant.ts (CORRIGIDO)
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { Animal, Descendant } from '@/types/models';
-import { createSupabaseClient, createTRPCRouter, protectedProcedure } from '../create-context'; // Caminho Relativo
+import { Animal, Descendant } from '@/types/models.js';
+import { createSupabaseClient, createTRPCRouter, protectedProcedure } from '../create-context.js'; // Caminho Relativo
 
 export const descendantRouter = createTRPCRouter({
   

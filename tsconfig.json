@@ -2,7 +2,12 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "moduleResolution": "nodenext",
     "baseUrl": ".",
+    "outDir": "dist",
+    "target": "ES2022",
+    "module": "nodenext",
+    "esModuleInterop": true,    
     "paths": {
       "@/*": ["./*"],
       "@app/*": ["./app/*"],
@@ -17,22 +22,5 @@
       "@backend/trpc/*": ["./backend/trpc/*"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "backend/**/*.ts",
-    "backend/**/*.tsx",
-    "app/**/*.ts",
-    "app/**/*.tsx",
-    "components/**/*.ts",
-    "components/**/*.tsx",
-    "constants/**/*.ts",
-    "constants/**/*.tsx",
-    "contexts/**/*.ts",
-    "contexts/**/*.tsx",
-    "lib/**/*.ts",
-    "lib/**/*.tsx",
-    "expo-env.d.ts"
-  ]
+  "include": ["backend/**/*.ts", "api/**/*.ts"]
 }

@@ -1,8 +1,8 @@
 // backend/trpc/routes/auth.ts (VERSÃO FINAL E CORRIGIDA)
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { getSupabaseClient } from '../../lib/supabase'; // ✅ NOVO IMPORT PARA O LAZY SINGLETON
-import { createTRPCRouter, protectedProcedure, publicProcedure } from '../create-context'; // Caminho Relativo
+import { getSupabaseClient } from '../../lib/supabase.js'; // ✅ NOVO IMPORT PARA O LAZY SINGLETON
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '../create-context.js'; // Caminho Relativo
 
 export const authRouter = createTRPCRouter({
   

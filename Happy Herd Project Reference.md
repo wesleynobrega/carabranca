@@ -709,7 +709,7 @@ The app uses **Expo Router** (file-based routing) with a tab-based navigation pa
 
 #### tRPC Setup
 
-**Context Creation (`backend/trpc/create-context.ts`):**
+**Context Creation (`backend/trpc/create-context.js.ts`):**
 ```typescript
 interface Context {
   req: Request;  // HTTP request object
