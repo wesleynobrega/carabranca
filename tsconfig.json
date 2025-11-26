@@ -21,6 +21,18 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
+    "backend/**/*.ts",
+    "backend/**/*.tsx",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "constants/**/*.ts",
+    "constants/**/*.tsx",
+    "contexts/**/*.ts",
+    "contexts/**/*.tsx",
+    "lib/**/*.ts",
+    "lib/**/*.tsx",
     "expo-env.d.ts"
   ]
 }
