@@ -13,7 +13,7 @@ const app = new Hono();
 // }));
 
 // ✅ ROTA DE DIAGNÓSTICO/HEALTH CHECK
-app.get('/', (c) => {
+app.get('/', (c) => { 
   return c.json({ status: 'ok', message: 'Hono/tRPC API is running on Vercel' });
 });
 

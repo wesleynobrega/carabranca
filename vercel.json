@@ -2,25 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/index.ts", 
-      
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": [
-          "backend/trpc/**",
-          "backend/lib/**"
-        ]
-      }
+      "src": "api/index.ts",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
-    { 
-      "src": "/", 
-      "dest": "/api" 
-    },
     {
-      "src": "/api/(.*)", 
-      "dest": "/api" 
+      "src": "/(.*)",
+      "dest": "/api"
     }
   ]
 }
