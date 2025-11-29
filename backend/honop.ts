@@ -1,17 +1,25 @@
-import { trpcServer } from '@hono/trpc-server';
+// import { trpcServer } from '@hono/trpc-server'; // COMENTADO
 import { Hono } from 'hono';
-// REMOVA os '.js' daqui também
-import { appRouter } from './trpc/app-router.js';
-import { createContext } from './trpc/create-context.js';
+// import { appRouter } from './trpc/app-router.js'; // COMENTADO
+// import { createContext } from './trpc/create-context.js'; // COMENTADO
 
 const app = new Hono();
 
-// 1. Rota de Diagnóstico
+// Rota de Teste Simples
 app.get('/', (c) => {
-  return c.json({ status: 'ok', message: 'Hono/tRPC API is running on Vercel' });
+  return c.json({ 
+    status: 'ok', 
+    message: 'Vercel connection is working!', 
+    timestamp: new Date().toISOString() 
+  });
 });
 
-// 2. Rota tRPC
+// Rota de Teste para ver se o 'wildcard' funciona
+app.get('/api/test', (c) => {
+  return c.json({ message: 'Test route working' });
+});
+
+/* // COMENTADO TEMPORARIAMENTE PARA ISOLAR O PROBLEMA
 app.use(
   '/api/trpc/*',
   trpcServer({
@@ -20,8 +28,9 @@ app.use(
     createContext: createContext as any,
   })
 );
+*/
 
-// 3. Rota de Debug (Catch-All) - DEVE VIR POR ÚLTIMO
+// Rota de Debug (Catch-All)
 app.all('*', (c) => {
     return c.json({ 
       status: 'error', 
