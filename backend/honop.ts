@@ -1,15 +1,13 @@
 import { trpcServer } from '@hono/trpc-server';
 import { Hono } from 'hono';
-// import { cors } from 'hono/cors'; // Removido conforme instrução anterior
+// REMOVA os '.js' daqui também
 import { appRouter } from './trpc/app-router.js';
 import { createContext } from './trpc/create-context.js';
 
 const app = new Hono();
 
-// --- SUAS ROTAS NORMAIS ---
-
-// 1. Rota de diagnóstico
-app.get('/', (c) => { 
+// 1. Rota de Diagnóstico
+app.get('/', (c) => {
   return c.json({ status: 'ok', message: 'Hono/tRPC API is running on Vercel' });
 });
 
@@ -23,16 +21,13 @@ app.use(
   })
 );
 
-// --- ROTA DE DEBUG (O CÓDIGO QUE VOCÊ PERGUNTOU) ---
-// Coloque aqui, DEPOIS de todas as outras rotas e ANTES do export
+// 3. Rota de Debug (Catch-All) - DEVE VIR POR ÚLTIMO
 app.all('*', (c) => {
-  return c.json({ 
-    status: 'error', 
-    message: 'Route not found',
-    path: c.req.path,
-    method: c.req.method
-  }, 404);
+    return c.json({ 
+      status: 'error', 
+      message: 'Route not found',
+      path: c.req.path
+    }, 404);
 });
 
-// --- EXPORTAÇÃO ---
 export default app;
