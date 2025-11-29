@@ -9,7 +9,9 @@
     "start-web-dev": "DEBUG=expo* bunx rork start -p 9xm5hh1oqp55gyrs3f86l --web --tunnel",
     "lint": "expo lint",
     "dev": "bun --hot --env-file=.env run backend/honop.ts",
-    "build": "tsc"
+    
+    "//": "Abaixo: O comando mkdir -p public cria a pasta que a Vercel exige para finalizar o deploy.",
+    "build": "mkdir -p public"
   },
   "engines": { 
     "node": ">=20.0.0"
