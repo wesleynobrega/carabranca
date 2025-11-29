@@ -1,23 +1,17 @@
 import { trpcServer } from '@hono/trpc-server';
 import { Hono } from 'hono';
+// import { cors } from 'hono/cors'; // Mantenha comentado ou removido
 import { appRouter } from './trpc/app-router.js';
 import { createContext } from './trpc/create-context.js';
 
 const app = new Hono();
 
-// Aplicar CORS a todas as rotas
-// app.use('*', cors({
-//   origin: '*',
-//   allowMethods: ['GET', 'POST', 'OPTIONS'],
-//   allowHeaders: ['Authorization', 'Content-Type'],
-// }));
-
-// ✅ ROTA DE DIAGNÓSTICO/HEALTH CHECK
+// ROTA DE DIAGNÓSTICO
 app.get('/', (c) => { 
   return c.json({ status: 'ok', message: 'Hono/tRPC API is running on Vercel' });
 });
 
-// A rota tRPC
+// Rota tRPC
 app.use(
   '/api/trpc/*',
   trpcServer({
@@ -27,5 +21,5 @@ app.use(
   })
 );
 
-// ✅ EXPORTAÇÃO CORRIGIDA para Vercel
-export default app.fetch;
+// ✅ ALTERAÇÃO: Exporte a instância 'app' inteira, não 'app.fetch'
+export default app;
