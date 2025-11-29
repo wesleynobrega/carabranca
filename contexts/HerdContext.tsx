@@ -3,10 +3,10 @@
 import { setAppLocale } from '@/lib/i18n';
 import { trpc } from '@/lib/trpc';
 import { StorageService } from '@/services/storage';
-import type { Animal, AnimalFilter, User } from '@/types/models';
 import { useQueryClient } from '@tanstack/react-query';
 import * as Localization from 'expo-localization';
-import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import type { Animal, AnimalFilter, User } from '../../../types/models.js';
 
 // --- Interface e Contexto (Sem alterações) ---
 interface HerdContextType {

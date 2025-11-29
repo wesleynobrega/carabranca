@@ -4,11 +4,11 @@ import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants
 import { useHerd } from '@/contexts/HerdContext';
 import i18n, { t } from '@/lib/i18n';
 import { trpc } from '@/lib/trpc';
-import { HealthEvent } from '@/types/models';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { AlertCircle, ArrowLeft, ChevronRight, FileText, Pill, Stethoscope, Syringe } from 'lucide-react-native';
 import React, { useCallback } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { HealthEvent } from '../../../types/models.js';
 
 const eventIcons: Record<HealthEvent['eventType'], any> = {
   vaccination: Syringe,

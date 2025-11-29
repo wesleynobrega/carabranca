@@ -6,11 +6,11 @@ import { Input } from '@/components/Input';
 import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
 import i18n, { t } from '@/lib/i18n';
 import { trpc } from '@/lib/trpc';
-import { HealthEvent } from '@/types/models';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowLeft, Clock, Trash2 } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { HealthEvent } from '../../../types/models.js';
 
 const eventTypeOptions: HealthEvent['eventType'][] = ['vaccination', 'treatment', 'checkup', 'injury', 'other'];
 

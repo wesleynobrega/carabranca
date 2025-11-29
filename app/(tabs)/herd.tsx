@@ -1,11 +1,11 @@
 // 1. CORREÇÃO: Adicionado 'useMemo' à importação do React
 import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
 import { useFilteredAnimals, useHerd } from '@/contexts/HerdContext';
-import { Animal, AnimalFilter } from '@/types/models';
 import { useRouter } from 'expo-router';
 import { Plus, Search } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Animal, AnimalFilter } from '../../../types/models.js';
 
 import { t } from '@/lib/i18n';
 

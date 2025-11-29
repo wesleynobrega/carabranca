@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  ActivityIndicator // 1. Importar ActivityIndicator
-  ,
+    ActivityIndicator // 1. Importar ActivityIndicator
+    ,
 
 
 
-  Alert,
-  Image,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
+
+    Alert,
+    Image,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
 // 2. Importar Stack e useLocalSearchParams
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
@@ -28,7 +29,7 @@ import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants
 import { useHerd } from '@/contexts/HerdContext'; // 5. Puxar o 'locale'
 import { t } from '@/lib/i18n';
 import { trpc } from '@/lib/trpc'; // 6. Importar trpc
-import { Animal } from '@/types/models';
+import { Animal } from '../../../types/models.js';
 
 // --- HELPER DE DATA (Para corrigir o Bug 3) ---
 // Converte uma string 'AAAA-MM-DD' para um objeto Date

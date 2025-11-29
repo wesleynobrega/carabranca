@@ -3,15 +3,15 @@
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { Camera, Image as ImageIcon } from 'lucide-react-native';
-import React, { useState } from 'react'; // 1. Importar useMemo
+import { useState } from 'react'; // 1. Importar useMemo
 import {
-  Alert,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
+    Alert,
+    Image,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -21,7 +21,7 @@ import { Input } from '@/components/Input';
 import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
 import { useHerd } from '@/contexts/HerdContext';
 import { t } from '@/lib/i18n';
-import { Animal } from '@/types/models';
+import { Animal } from '../../../types/models.js';
 
 // Converte um objeto Date para o formato 'AAAA-MM-DD'
 const dateToISO = (date: Date): string => {
