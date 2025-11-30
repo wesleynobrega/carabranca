@@ -2,10 +2,10 @@ import app from "./honop.js";
 
 const port = parseInt(process.env.PORT || "3000");
 
-console.log(`🚀 Servidor rodando na porta ${port}`);
+console.log(`🚀 Servidor iniciando na porta ${port}...`);
 
-// O Bun detecta automaticamente o export default e inicia o servidor
 export default {
-  port: port,
+  port: port, 
+  hostname: '0.0.0.0', // <--- ADICIONE ESTA LINHA OBRIGATÓRIA PARA DOCKER/RENDER
   fetch: app.fetch,
 };
