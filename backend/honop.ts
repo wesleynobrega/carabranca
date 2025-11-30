@@ -1,25 +1,22 @@
-// import { trpcServer } from '@hono/trpc-server'; // COMENTADO
+import { trpcServer } from '@hono/trpc-server';
 import { Hono } from 'hono';
-// import { appRouter } from './trpc/app-router.js'; // COMENTADO
-// import { createContext } from './trpc/create-context.js'; // COMENTADO
+// import { cors } from 'hono/cors'; // Mantenha removido/comentado para Vercel
+import { appRouter } from './trpc/app-router.js';
+import { createContext } from './trpc/create-context.js';
 
 const app = new Hono();
 
-// Rota de Teste Simples
+// 1. Rota de Diagnóstico (Health Check)
 app.get('/', (c) => {
   return c.json({ 
     status: 'ok', 
-    message: 'Vercel connection is working!', 
-    timestamp: new Date().toISOString() 
+    message: 'Hono/tRPC API is running on Vercel',
+    timestamp: new Date().toISOString()
   });
 });
 
-// Rota de Teste para ver se o 'wildcard' funciona
-app.get('/api/test', (c) => {
-  return c.json({ message: 'Test route working' });
-});
-
-/* // COMENTADO TEMPORARIAMENTE PARA ISOLAR O PROBLEMA
+// 2. Rota tRPC
+// O prefixo deve ser '/api/trpc' para bater com a URL que o Vercel envia
 app.use(
   '/api/trpc/*',
   trpcServer({
@@ -28,15 +25,17 @@ app.use(
     createContext: createContext as any,
   })
 );
-*/
 
-// Rota de Debug (Catch-All)
+// 3. Rota de Debug (Catch-All)
+// Útil para saber se a requisição chegou mas a rota estava errada
 app.all('*', (c) => {
-    return c.json({ 
-      status: 'error', 
-      message: 'Route not found',
-      path: c.req.path
-    }, 404);
+  return c.json({ 
+    status: 'error', 
+    message: 'Route not found',
+    path: c.req.path,
+    method: c.req.method
+  }, 404);
 });
 
+// Exporta a instância do app para ser usada pelo adaptador
 export default app;

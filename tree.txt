@@ -76,6 +76,8 @@
 ├── .gitignore
 ├── Happy Herd Project Reference.md
 ├── .idea
+│   ├── caches
+│   │   └── deviceStreaming.xml
 │   ├── carabranca.iml
 │   ├── .gitignore
 │   ├── misc.xml
@@ -98,4 +100,4 @@
 ├── vercel.json
 └── wesleynobrega.keystore
 
-24 directories, 75 files
+25 directories, 76 files
