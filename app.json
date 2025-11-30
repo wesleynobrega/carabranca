@@ -37,7 +37,17 @@
       "usesCleartextTraffic": true
     },
     "web": {
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "bundler": "metro",
+      "output": "static",
+      "name": "Happy Herd",
+      "shortName": "HappyHerd",
+      "backgroundColor": "#FAF9F6",
+      "themeColor": "#2D5016",
+      "display": "standalone",
+      "scope": "/",
+      "startUrl": "/",
+      "orientation": "portrait"
     },
     "plugins": [
       [
