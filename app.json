@@ -42,12 +42,18 @@
       "output": "static",
       "name": "Happy Herd",
       "shortName": "HappyHerd",
+      "lang": "pt-BR",
+      "themeColor": "#2D5016", 
       "backgroundColor": "#FAF9F6",
-      "themeColor": "#2D5016",
       "display": "standalone",
+      "orientation": "portrait",
       "scope": "/",
       "startUrl": "/",
-      "orientation": "portrait"
+      "description": "Gerenciamento inteligente do seu rebanho.",
+      "meta": {
+        "apple-mobile-web-app-capable": "yes",
+        "apple-mobile-web-app-status-bar-style": "black-translucent"
+      }
     },
     "plugins": [
       [
