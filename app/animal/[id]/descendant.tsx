@@ -98,8 +98,11 @@ export default function DescendantsListScreen() {
               >
                 <View style={styles.descendantInfo}>
                   <View style={styles.descendantHeader}>
-                    <Text style={styles.descendantId}>#{child.tagId}</Text>
-                    {child.name && <Text style={styles.descendantName}>{child.name}</Text>}
+                    {/* ✅ CORREÇÃO DE EXIBIÇÃO: Prioriza tagId, mas usa nome como fallback. */}
+                    <Text style={styles.descendantId}>
+                      {child.tagId ? `#${child.tagId}` : (child.name || t('common.error'))}
+                    </Text>
+                    {child.name && child.tagId && <Text style={styles.descendantName}>{child.name}</Text>}
                   </View>
                   <View style={styles.descendantDetails}>
                     <View style={styles.detailItem}>
@@ -108,14 +111,18 @@ export default function DescendantsListScreen() {
                         {formatLocalDate(child.dateOfBirth, i18n.currentLocale())}
                       </Text>
                     </View>
+                    
+                    {/* ✅ CORREÇÃO ADICIONADA: Bloco de Sexo (Gender) estava faltando na listagem */}
                     <View style={styles.detailItem}>
                       <Text style={styles.detailLabel}>{t('animal.gender')}:</Text>
                       <Text style={styles.detailValue}>
                         {child.gender === 'M' ? t('common.male') : t('common.female')}
                       </Text>
                     </View>
+
                     <View style={styles.detailItem}>
-                      <Text style={styles.detailLabel}>{t('animal.form.typeLabel')}:</Text>
+                      <Text style={styles.detailLabel}>{t('animal.type')}:</Text>
+                      {/* ✅ CORREÇÃO: Usar a tradução correta para o tipo de animal */}
                       <Text style={styles.detailValue}>{t(`animal.type.${child.type}` as any)}</Text>
                     </View>
                   </View>

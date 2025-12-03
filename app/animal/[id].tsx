@@ -75,7 +75,11 @@ export default function AnimalProfileScreen() {
       setType(animal.type || 'calf');
       setGender(animal.gender || 'F');      
       setDateOfBirth(isoToDate(animal.dateOfBirth));
-      // ... (outros campos preenchidos no handleCancelEdit)
+      setWeight(animal.weight?.toString() || ''); // Converte número para string para o TextInput
+      setStatus(animal.status || 'active');
+      setBreed(animal.breed || '');
+      setColor(animal.color || '');
+      setObservations(animal.observations || '');            
     }
   }, [animal, locale]);
 

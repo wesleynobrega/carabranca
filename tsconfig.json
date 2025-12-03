@@ -1,12 +1,10 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true,
-    
-    // ✅ CORREÇÃO CRÍTICA: Reverter para módulos que o Metro entende.
-    // Isso resolve o erro 500.
+    "strict": true, 
     "moduleResolution": "node", 
     "module": "commonjs",     
+    "jsx": "react-native",
     
     "target": "ES2022",
     "esModuleInterop": true,
