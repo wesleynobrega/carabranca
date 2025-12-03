@@ -2,51 +2,26 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "moduleResolution": "nodenext",
-    "baseUrl": ".",
-    "outDir": "dist",
+    
+    // ✅ CORREÇÃO CRÍTICA: Reverter para módulos que o Metro entende.
+    // Isso resolve o erro 500.
+    "moduleResolution": "node", 
+    "module": "commonjs",     
+    
     "target": "ES2022",
-    "module": "nodenext",
     "esModuleInterop": true,
+    "baseUrl": ".",
+    
+    // Mantemos o alias para o TypeScript
     "paths": {
       "@/*": [
         "./*"
-      ],
-      "@app/*": [
-        "./app/*"
-      ],
-      "@components/*": [
-        "./components/*"
-      ],
-      "@constants/*": [
-        "./constants/*"
-      ],
-      "@contexts/*": [
-        "./contexts/*"
-      ],
-      "@lib/*": [
-        "./lib/*"
-      ],
-      "@services/*": [
-        "./services/*"
-      ],
-      "@repositories/*": [
-        "./repositories/*"
-      ],
-      "@types/*": [
-        "./types/*"
-      ],
-      "@backend/*": [
-        "./backend/*"
-      ],
-      "@backend/trpc/*": [
-        "./backend/trpc/*"
       ]
     }
   },
   "include": [
-    "backend/**/*.ts",
-    "api/**/*.ts",
+    "**/*.ts",
+    "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
   ]

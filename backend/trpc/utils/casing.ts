@@ -37,4 +37,3 @@ export const toSnakeCase = (obj: any): any => {
     return result;
   }, {} as { [key: string]: any });
 };
-

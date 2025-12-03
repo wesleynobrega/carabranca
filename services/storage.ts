@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // 1. Remova os tipos não utilizados
-// import { User, Animal, HealthEvent, Descendant } from '../../../types/models.js';
+// import { User, Animal, HealthEvent, Descendant } from '@/types/models';
 
 const STORAGE_KEYS = {
   USER_TOKEN: '@happyherd:user_token', 

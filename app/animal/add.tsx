@@ -21,7 +21,7 @@ import { Input } from '@/components/Input';
 import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
 import { useHerd } from '@/contexts/HerdContext';
 import { t } from '@/lib/i18n';
-import { Animal } from '../../../types/models.js';
+import { Animal } from '@/types/models';
 
 // Converte um objeto Date para o formato 'AAAA-MM-DD'
 const dateToISO = (date: Date): string => {

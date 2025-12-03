@@ -1,13 +1,13 @@
 // app/register.tsx (CORRETO - Nenhuma alteração necessária)
 
-import { Button } from '@/components/Button';
-import { Input } from '@/components/Input';
-import { Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
-import { useHerd } from '@/contexts/HerdContext';
-import { t } from '@/lib/i18n';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button } from '../components/Button';
+import { Input } from '../components/Input';
+import { Colors, FontSize, FontWeight, Spacing } from '../constants/colors';
+import { useHerd } from '../contexts/HerdContext';
+import { t } from '../lib/i18n';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -93,10 +93,7 @@ export default function RegisterScreen() {
         <Input
           label={t('register.fullNameLabel')}
           value={fullName}
-          onChangeText={(text: string) => {
-            setFullName(text);
-            if (errors.fullName) setErrors({ ...errors, fullName: undefined });
-          }}
+          onChangeText={(text: string) => { setFullName(text); if (errors.fullName) setErrors({ ...errors, fullName: undefined }); }}
           placeholder={t('register.fullNamePlaceholder')}
           error={errors.fullName}
           autoCapitalize="words"
@@ -105,10 +102,7 @@ export default function RegisterScreen() {
         <Input
           label={t('common.email')}
           value={email}
-          onChangeText={(text: string) => {
-            setEmail(text);
-            if (errors.email) setErrors({ ...errors, email: undefined });
-          }}
+          onChangeText={(text: string) => { setEmail(text); if (errors.email) setErrors({ ...errors, email: undefined }); }}
           placeholder={t('common.emailPlaceholder')}
           keyboardType="email-address"
           autoCapitalize="none"
@@ -118,10 +112,7 @@ export default function RegisterScreen() {
         <Input
           label={t('common.password')}
           value={password}
-          onChangeText={(text: string) => {
-            setPassword(text);
-            if (errors.password) setErrors({ ...errors, password: undefined });
-          }}
+          onChangeText={(text: string) => { setPassword(text); if (errors.password) setErrors({ ...errors, password: undefined }); }}
           placeholder={t('register.passwordPlaceholder')}
           secureTextEntry
           error={errors.password}
@@ -130,26 +121,20 @@ export default function RegisterScreen() {
         <Input
           label={t('register.confirmPasswordLabel')}
           value={confirmPassword}
-          onChangeText={(text: string) => {
-            setConfirmPassword(text);
-            if (errors.confirmPassword) setErrors({ ...errors, confirmPassword: undefined });
-          }}
+          onChangeText={(text: string) => { setConfirmPassword(text); if (errors.confirmPassword) setErrors({ ...errors, confirmPassword: undefined }); }}
           placeholder={t('register.confirmPasswordPlaceholder')}
           secureTextEntry
           error={errors.confirmPassword}
         />
 
+        {/* ✅ CAMPO CHECKBOX APERTADO (SEM WHITESPACE) */}
         <TouchableOpacity 
           style={styles.checkboxContainer}
-          onPress={() => {
-            setAgreedToTerms(!agreedToTerms);
-            if (errors.terms) setErrors({ ...errors, terms: undefined });
-          }}
+          onPress={() => { setAgreedToTerms(!agreedToTerms); if (errors.terms) setErrors({ ...errors, terms: undefined }); }}
         >
           <View style={[styles.checkbox, agreedToTerms && styles.checkboxChecked]}>
             {agreedToTerms && <View style={styles.checkmark} />}
-          </View>
-          <Text style={styles.checkboxLabel}>
+          </View><Text style={styles.checkboxLabel}>
             {t('register.termsAgreement')}
           </Text>
         </TouchableOpacity>

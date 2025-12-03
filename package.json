@@ -1,15 +1,15 @@
 {
   "name": "expo-app",
-  "type": "module",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
     "start": "bun run backend/server.ts",
-    "start:mobile": "bunx rork start -p 9xm5hh1oqp55gyrs3f86l --tunnel",
     "start-web": "bunx rork start -p 9xm5hh1oqp55gyrs3f86l --web --tunnel",
+    "start-web-dev": "DEBUG=expo* bunx rork start -p 9xm5hh1oqp55gyrs3f86l --web --tunnel",
     "lint": "expo lint",
     "dev": "bun --hot --env-file=.env run backend/honop.ts",
-    "build": "echo 'No build needed for Bun'"
+    "//": "Abaixo: O comando mkdir -p public cria a pasta que a Vercel exige para finalizar o deploy.",
+    "build": "mkdir -p public && echo 'Hono API Active' > public/index.txt"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -68,9 +68,12 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@expo/metro-config": "~0.20.17",
     "@expo/ngrok": "^4.1.0",
     "@expo/webpack-config": "^19.0.1",
+    "@types/minimatch": "^6.0.0",
     "@types/react": "~19.0.10",
+    "babel-plugin-module-resolver": "^5.0.2",
     "eslint": "9.31.0",
     "eslint-config-expo": "9.2.0",
     "typescript": "~5.8.3"

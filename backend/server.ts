@@ -1,4 +1,4 @@
-import app from "./honop.js";
+import app from "./honop";
 
 const port = parseInt(process.env.PORT || "3000");
 

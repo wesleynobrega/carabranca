@@ -6,11 +6,11 @@ import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants
 import { useHerd } from '@/contexts/HerdContext'; // 1. Pegar o locale
 import { t } from '@/lib/i18n';
 import { trpc } from '@/lib/trpc';
+import { HealthEvent } from '@/types/models';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowLeft, Clock } from 'lucide-react-native';
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { HealthEvent } from '../../../types/models.js';
 
 // Converte um objeto Date para o formato 'AAAA-MM-DD'
 const dateToISO = (date: Date): string => {
