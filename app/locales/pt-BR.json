@@ -82,7 +82,7 @@
       "sold": "Vendido",
       "deceased": "Falecido"
     },
-    "type": {
+    "types": {
       "cow": "Vaca",
       "calf": "Bezerro(a)",
       "bull": "Touro",

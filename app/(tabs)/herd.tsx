@@ -1,4 +1,5 @@
-// 1. CORREÇÃO: Adicionado 'useMemo' à importação do React
+// thenobregatech/carabranca/carabranca-0b9bdf5e62299896897a45c0be282343f622b3de/app/(tabs)/herd.tsx
+
 import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
 import { useFilteredAnimals, useHerd } from '@/contexts/HerdContext';
 import { Animal, AnimalFilter } from '@/types/models';
@@ -10,11 +11,11 @@ import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TextInput, Toucha
 import { t } from '@/lib/i18n';
 
 // Filtros agora usam 't()'
-const FILTERS: { labelKey: string; value: AnimalFilter }[] = [
-  { labelKey: 'animal.filter.all', value: 'all' },
-  { labelKey: 'animal.filter.adults', value: 'cow' },
-  { labelKey: 'animal.filter.calves', value: 'calf' },
-  { labelKey: 'animal.filter.forSale', value: 'for_sale' },
+const FILTERS: { label: string; value: AnimalFilter }[] = [
+  { label: t('animal.filter.all'), value: 'all' },
+  { label: t('animal.filter.adults'), value: 'cow' }, 
+  { label: t('animal.filter.calves'), value: 'calf' },
+  { label: t('animal.filter.forSale'), value: 'for_sale' },
 ];
 
 export default function HerdScreen() {
@@ -64,8 +65,9 @@ export default function HerdScreen() {
               style={[styles.filterChip, filter === f.value && styles.filterChipActive]}
               onPress={() => setFilter(f.value)}
             >
+              {/* CORREÇÃO: f.labelKey não existe. Deve usar f.label */}
               <Text style={[styles.filterText, filter === f.value && styles.filterTextActive]}>
-                {t(f.labelKey)}
+                {f.label}
               </Text>
             </TouchableOpacity>
           ))}
@@ -80,6 +82,7 @@ export default function HerdScreen() {
         </View>
       ) : filteredAnimals.length === 0 ? (
         <View style={styles.emptyState}>
+          {/* Corrigido para usar a nova chave 'animal.empty.herdTitle' */}
           <Text style={styles.emptyTitle}>{t('animal.empty.herdTitle')}</Text>
           <Text style={styles.emptyText}>
             {searchQuery || filter !== 'all'
@@ -91,7 +94,7 @@ export default function HerdScreen() {
         <FlatList
           data={filteredAnimals}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <AnimalCard animal={item} onPress={() => router.push(`/animal/${item.id}`)} />}
+          renderItem={({ item }) => <AnimalCard animal={item} onPress={() => router.push(`/animal/${item.id}` as any)} />}
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
         />
@@ -108,9 +111,18 @@ interface AnimalCardProps {
 function AnimalCard({ animal, onPress }: AnimalCardProps) {
   const { locale } = useHerd();
 
-  // 2. 'useMemo' agora está definido
+  // Código defensivo: Garante que as variáveis existem e têm fallback
+  const tagId = animal.tagId || "";
+  const name = animal.name;
+  const imageUri = animal.imageUri;
+  const status = animal.status || "active";
+  const type = animal.type || "calf"; // Usaremos 'type'
+  const gender = animal.gender || "F"; // Usaremos 'gender'
+
+  // 'useMemo' para calcular e formatar a idade (string)
   const ageString = useMemo(() => {
     try {
+      // Usando o formato YYYY-MM-DD para garantir a corretude do Date
       const [year, month, day] = animal.dateOfBirth.split('-').map(Number);
       const birthDate = new Date(year, month - 1, day);
       const today = new Date();
@@ -118,11 +130,13 @@ function AnimalCard({ animal, onPress }: AnimalCardProps) {
       let years = today.getFullYear() - birthDate.getFullYear();
       let months = today.getMonth() - birthDate.getMonth();
       
+      // Ajuste para garantir anos e meses corretos
       if (months < 0 || (months === 0 && today.getDate() < birthDate.getDate())) {
         years--;
         months += 12;
       }
       
+      // Retorna a string formatada completa (ex: "5 anos", "3 meses")
       if (years > 1) {
         return `${years} ${t('common.yearPlural')}`;
       }
@@ -139,6 +153,7 @@ function AnimalCard({ animal, onPress }: AnimalCardProps) {
       return `< 1 ${t('common.monthSingular')}`; // Menos de 1 mês
 
     } catch (e) {
+      // Defensivo contra datas mal formatadas
       return 'N/A';
     }
   }, [animal.dateOfBirth, locale]); // Depende do locale para recarregar as traduções
@@ -153,14 +168,6 @@ function AnimalCard({ animal, onPress }: AnimalCardProps) {
     }
   };
 
-  // Código defensivo
-  const tagId = animal.tagId || "";
-  const name = animal.name;
-  const imageUri = animal.imageUri;
-  const status = animal.status || "active";
-  const type = animal.type || "calf";
-  const gender = animal.gender || "F";
-
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
       <View style={styles.cardImage}>
@@ -174,8 +181,10 @@ function AnimalCard({ animal, onPress }: AnimalCardProps) {
       </View>
       <View style={styles.cardContent}>
         <View style={styles.cardHeader}>
+          {/* USANDO TAGID DEFENSIVO */}
           <Text style={styles.cardId}>#{tagId}</Text>
           <View style={[styles.statusBadge, { backgroundColor: getStatusColor(status) + '20' }]}>
+            {/* USANDO STATUS DEFENSIVO */}
             <Text style={[styles.statusText, { color: getStatusColor(status) }]}>
               {t(`animal.status.${status}`)}
             </Text>
@@ -183,10 +192,13 @@ function AnimalCard({ animal, onPress }: AnimalCardProps) {
         </View>
         {name && <Text style={styles.cardName}>{name}</Text>}
         <View style={styles.cardDetails}>
-          <Text style={styles.cardDetailText}>{t(`animal.type.${type}`)}</Text>
+          {/* USANDO TYPE DEFENSIVO */}
+          <Text style={styles.cardDetailText}>{t(`animal.types.${type}`)}</Text>
           <Text style={styles.cardDetailText}>•</Text>
-          <Text style={styles.cardDetailText}>{ageString}</Text>
+          {/* CORREÇÃO CRÍTICA: Usando ageString (o valor formatado do useMemo) */}
+          <Text style={styles.cardDetailText}>{ageString}</Text> 
           <Text style={styles.cardDetailText}>•</Text>
+          {/* USANDO GENDER DEFENSIVO */}
           <Text style={styles.cardDetailText}>{gender === 'M' ? t('common.male') : t('common.female')}</Text>
         </View>
       </View>
@@ -194,7 +206,6 @@ function AnimalCard({ animal, onPress }: AnimalCardProps) {
   );
 }
 
-// ... (Estilos - sem alterações) ...
 const styles = StyleSheet.create({
   container: {
     flex: 1,

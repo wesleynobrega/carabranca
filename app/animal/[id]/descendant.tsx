@@ -1,4 +1,4 @@
-// app/animal/[id]/descendant.tsx (COMPLETO E CORRIGIDO)
+// thenobregatech/carabranca/.../app/animal/[id]/descendant.tsx
 
 import { BorderRadius, Colors, FontSize, FontWeight, Spacing } from '@/constants/colors';
 import { useHerd } from '@/contexts/HerdContext';
@@ -9,22 +9,27 @@ import { ArrowLeft, ChevronRight, Plus } from 'lucide-react-native';
 import React, { useCallback } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-// Helper para formatar datas no formato AAAA-MM-DD ou ISO
+// Função de formatação de data
 function formatLocalDate(isoOrDate?: string, locale?: string) {
-  if (!isoOrDate) return 'N/A';
+  if (!isoOrDate || String(isoOrDate).trim() === '' || isoOrDate === 'undefined') {
+    return 'N/A';
+  }
+
   try {
-    const loc = locale || (typeof (Intl) !== 'undefined' ? undefined : undefined);
-    // Caso seja no formato YYYY-MM-DD
-    if (/^\d{4}-\d{2}-\d{2}$/.test(isoOrDate)) {
-      const [year, month, day] = isoOrDate.split('-').map(Number);
-      const d = new Date(year, month - 1, day);
-      if (isNaN(d.getTime())) return 'N/A';
-      return d.toLocaleDateString(locale || undefined, { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const dateStringUTC = isoOrDate.includes('T')
+      ? isoOrDate
+      : `${isoOrDate}T00:00:00.000Z`;
+    const parsed = new Date(dateStringUTC);
+
+    if (isNaN(parsed.getTime())) {
+      return 'N/A';
     }
-    // Tenta criar a Date normalmente (para ISO com time, etc.)
-    const parsed = new Date(isoOrDate);
-    if (isNaN(parsed.getTime())) return 'N/A';
-    return parsed.toLocaleDateString(locale || undefined, { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+    return parsed.toLocaleDateString(locale || 'default', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
   } catch {
     return 'N/A';
   }
@@ -34,13 +39,13 @@ export default function DescendantsListScreen() {
   const { id: parentId } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { getAnimalById } = useHerd();
-  
+
   const parent = getAnimalById(parentId!);
 
-  const { 
-    data: children = [], 
-    isLoading, 
-    refetch 
+  const {
+    data: children = [],
+    isLoading,
+    refetch,
   } = trpc.descendant.list.useQuery(
     { parentId: parentId! },
     { enabled: !!parentId }
@@ -74,14 +79,16 @@ export default function DescendantsListScreen() {
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
-      
+
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ArrowLeft size={24} color={Colors.white} />
         </TouchableOpacity>
         <View style={styles.headerContent}>
           <Text style={styles.headerTitle}>{t('animal.descendantsTitle')}</Text>
-          <Text style={styles.headerSubtitle}>#{parent.tagId} {parent.name ? `- ${parent.name}` : ''}</Text>
+          <Text style={styles.headerSubtitle}>
+            #{parent.tagId} {parent.name ? `- ${parent.name}` : ''}
+          </Text>
         </View>
       </View>
 
@@ -90,46 +97,53 @@ export default function DescendantsListScreen() {
           <ActivityIndicator size="large" color={Colors.primary} />
         ) : children.length > 0 ? (
           <View style={styles.descendantsList}>
-            {children.map((child) => (
-              <TouchableOpacity
-                key={child.id}
-                style={styles.descendantCard}
-                onPress={() => router.push(`/animal/${child.id}` as any)}
-              >
-                <View style={styles.descendantInfo}>
-                  <View style={styles.descendantHeader}>
-                    {/* ✅ CORREÇÃO DE EXIBIÇÃO: Prioriza tagId, mas usa nome como fallback. */}
-                    <Text style={styles.descendantId}>
-                      {child.tagId ? `#${child.tagId}` : (child.name || t('common.error'))}
-                    </Text>
-                    {child.name && child.tagId && <Text style={styles.descendantName}>{child.name}</Text>}
-                  </View>
-                  <View style={styles.descendantDetails}>
-                    <View style={styles.detailItem}>
-                      <Text style={styles.detailLabel}>{t('animal.dob')}:</Text>
-                      <Text style={styles.detailValue}>
-                        {formatLocalDate(child.dateOfBirth, i18n.currentLocale())}
+            {children.map((child) => {
+              // Log para inspecionar o valor vindo do backend
+              console.log('child.dateOfBirth raw =>', child.dateOfBirth);
+
+              return (
+                <TouchableOpacity
+                  key={child.id}
+                  style={styles.descendantCard}
+                  onPress={() => router.push(`/animal/${child.id}` as any)}
+                >
+                  <View style={styles.descendantInfo}>
+                    <View style={styles.descendantHeader}>
+                      <Text style={styles.descendantId}>
+                        {child.tagId ? `#${child.tagId}` : child.name || t('common.error')}
                       </Text>
-                    </View>
-                    
-                    {/* ✅ CORREÇÃO ADICIONADA: Bloco de Sexo (Gender) estava faltando na listagem */}
-                    <View style={styles.detailItem}>
-                      <Text style={styles.detailLabel}>{t('animal.gender')}:</Text>
-                      <Text style={styles.detailValue}>
-                        {child.gender === 'M' ? t('common.male') : t('common.female')}
-                      </Text>
+                      {child.name && child.tagId && (
+                        <Text style={styles.descendantName}>{child.name}</Text>
+                      )}
                     </View>
 
-                    <View style={styles.detailItem}>
-                      <Text style={styles.detailLabel}>{t('animal.type')}:</Text>
-                      {/* ✅ CORREÇÃO: Usar a tradução correta para o tipo de animal */}
-                      <Text style={styles.detailValue}>{t(`animal.type.${child.type}` as any)}</Text>
+                    <View style={styles.descendantDetails}>
+                      <View style={styles.detailItem}>
+                        <Text style={styles.detailLabel}>{t('animal.dob')}:</Text>
+                        <Text style={styles.detailValue}>
+                          {formatLocalDate(child.dateOfBirth, i18n.currentLocale())}
+                        </Text>
+                      </View>
+
+                      <View style={styles.detailItem}>
+                        <Text style={styles.detailLabel}>{t('animal.gender')}:</Text>
+                        <Text style={styles.detailValue}>
+                          {child.gender === 'M' ? t('common.male') : t('common.female')}
+                        </Text>
+                      </View>
+
+                      <View style={styles.detailItem}>
+                        <Text style={styles.detailLabel}>{t('animal.form.typeLabel')}:</Text>
+                        <Text style={styles.detailValue}>
+                          {t(`animal.types.${child.type}` as any)}
+                        </Text>
+                      </View>
                     </View>
                   </View>
-                </View>
-                <ChevronRight size={24} color={Colors.textMuted} />
-              </TouchableOpacity>
-            ))}
+                  <ChevronRight size={24} color={Colors.textMuted} />
+                </TouchableOpacity>
+              );
+            })}
           </View>
         ) : (
           <View style={styles.emptyListState}>

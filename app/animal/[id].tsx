@@ -330,7 +330,7 @@ export default function AnimalProfileScreen() {
               <DetailItem
                 icon={<Tag size={20} color={Colors.textLight} />}
                 label={t('animal.form.typeLabel')}
-                value={t(`animal.type.${animal.type}`)}
+                value={t(`animal.types.${animal.type}`)}
                 isHighlight
               />
               {animal.breed && (

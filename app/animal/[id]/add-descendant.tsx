@@ -150,7 +150,7 @@ export default function AddDescendantScreen() {
                       </Text>
                     )}
                     <Text style={[styles.animalDetail, selectedChildId === animal.id && styles.animalTextSelectedMuted]}>
-                      {t(`animal.type.${animal.type}` as any)} • {animal.gender === 'M' ? t('common.male') : t('common.female')}
+                      {t(`animal.types.${animal.type}` as any)} • {animal.gender === 'M' ? t('common.male') : t('common.female')}
                     </Text>
                   </View>
                   {selectedChildId === animal.id && (

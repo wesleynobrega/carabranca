@@ -56,7 +56,7 @@
     "descendantsTitle": "Descendants",
     "dob": "DOB",
     "gender": "Gender",
-    "type": "Type",
+    "types": "Type",
     "details": {
       "title": "Animal Details"
     },

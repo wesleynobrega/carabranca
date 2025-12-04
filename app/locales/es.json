@@ -56,7 +56,7 @@
     "descendantsTitle": "Descendientes",
     "dob": "F. Nac.",
     "gender": "Sexo",
-    "type": "Tipo",
+    "types": "Tipo",
     "details": {
       "title": "Detalles del Animal"
     },

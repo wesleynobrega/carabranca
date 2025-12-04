@@ -1,42 +1,50 @@
-// backend/trpc/routes/descendant.ts (CORRIGIDO)
 import { Animal, Descendant } from '@/types/models';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { createSupabaseClient, createTRPCRouter, protectedProcedure } from '../create-context'; // Caminho Relativo
+import { createSupabaseClient, createTRPCRouter, protectedProcedure } from '../create-context';
+import { toCamelCase } from '../utils/casing';
 
 export const descendantRouter = createTRPCRouter({
-  
   list: protectedProcedure
     .input(z.object({ parentId: z.string() }))
     .query(async ({ ctx, input }) => {
       const supabase = createSupabaseClient(ctx);
-      
+
       const { data: relations, error: relationError } = await supabase
         .from('descendants')
-        .select('child_id') 
+        .select('child_id')
         .eq('parent_id', input.parentId);
 
       if (relationError) {
-        console.error("Erro ao buscar relações:", relationError.message);
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Falha ao buscar descendentes' });
+        console.error('Erro ao buscar relações:', relationError.message);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Falha ao buscar descendentes',
+        });
       }
 
       if (!relations || relations.length === 0) {
-        return []; 
+        return [];
       }
 
-      const childIds = relations.map(d => d.child_id);
-      
+      const childIds = relations.map((d) => d.child_id);
+
       const { data: children, error: animalError } = await supabase
         .from('animals')
         .select('*')
-        .in('id', childIds); 
-        
+        .in('id', childIds);
+
       if (animalError) {
-        console.error("Erro ao buscar animais filhos:", animalError.message);
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Falha ao buscar dados dos filhos' });
+        console.error('Erro ao buscar animais filhos:', animalError.message);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Falha ao buscar dados dos filhos',
+        });
       }
-      return children as Animal[];
+
+      // ✅ Só converte snake_case → camelCase e devolve
+      const camelCaseChildren = toCamelCase(children) as Animal[];
+      return camelCaseChildren;
     }),
 
   create: protectedProcedure
