@@ -218,7 +218,7 @@ export default function AnimalProfileScreen() {
             onPress={() => setType(t_option)}
           >
             <Text style={[styles.chipText, type === t_option && styles.chipTextActive]}>
-              {t(`animal.type.${t_option}`)}
+              {t(`animal.types.${t_option}`)}
             </Text>
           </TouchableOpacity>
         ))}
